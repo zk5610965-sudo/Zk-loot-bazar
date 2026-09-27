@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZK Loot Bazaar - Reselling App</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f1f3f6;
+            color: #212121;
+            padding-bottom: 60px;
+        }
+        header {
+            background: #2874f0;
+            color: white;
+            padding: 8px 12px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .logo {
+            font-size: 17px;
+            font-weight: bold;
+            font-style: italic;
+        }
+        .search-bar {
+            width: 100%;
+            padding: 7px 10px;
+            background: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            outline: none;
+        }
+        .container {
+            padding: 8px;
+            max-width: 500px;
+            margin: auto;
+        }
+        .sale-banner-box {
+            background: linear-gradient(135deg, #ff9f00, #ff5722);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .sale-title {
+            font-size: 13px;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute; content: "";
+            height: 18px; width: 18px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #4caf50; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .blockbuster-poster {
+            display: none;
+            background: linear-gradient(45deg, #d32f2f, #c2185b);
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .cat-scroll {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding: 4px 0 8px 0;
+            scrollbar-width: none;
+        }
+        .cat-scroll::-webkit-scrollbar { display: none; }
+        .cat-chip {
+            background: white;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+            white-space: nowrap;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            cursor: pointer;
+            border: 1px solid #e0e0e0;
+        }
+        .cat-chip.active {
+            background: #2874f0;
+            color: white;
+            border-color: #2874f0;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        .product-card {
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .product-card img {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            background: #e0e0e0;
+            cursor: pointer;
+        }
+        /* Custom Badge Styles */
+        .badge-trusted {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: #1e88e5;
+            color: white;
+            font-size: 9px;
+            font-weight: bold;
+            padding: 3px 6px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            z-index: 5;
+        }
+        .badge-bestseller {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: #fbc02d;
+            color: #000;
+            font-size: 9px;
+            font-weight: bold;
+            padding: 3px 6px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            z-index: 5;
+        }
+
+        .product-info {
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            flex: 1;
+        }
+        .p-title {
+            font-size: 12px;
+            color: #333;
+            font-weight: 600;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .p-price {
+            font-size: 14px;
+            font-weight: bold;
+            color: #388e3c;
+        }
+        .p-old-price {
+            font-size: 10px;
+            color: #878787;
+            text-decoration: line-through;
+            margin-left: 4px;
+        }
+        .admin-action-row {
+            display: flex;
+            gap: 4px;
+            margin-top: 4px;
+        }
+        .btn-edit {
+            background: #17a2b8;
+            color: white;
+            border: none;
+            padding: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            border-radius: 3px;
+            cursor: pointer;
+            flex: 1;
+        }
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            border-radius: 3px;
+            cursor: pointer;
+            flex: 1;
+        }
+        .section-view { display: none; }
+        .section-view.active { display: block; }
+        .card-box {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            margin-bottom: 8px;
+        }
+        .form-group { margin-bottom: 8px; }
+        .form-group label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #555;
+            display: block;
+            margin-bottom: 2px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 7px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 13px;
+            outline: none;
+        }
+        .btn-submit {
+            background: #2874f0;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .meesho-slider {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            padding-bottom: 5px;
+            scrollbar-width: thin;
+        }
+        .meesho-slider img {
+            width: 100%;
+            min-width: 100%;
+            height: 260px;
+            object-fit: cover;
+            border-radius: 6px;
+            scroll-snap-align: center;
+            background: #e0e0e0;
+        }
+        .gallery-thumbs {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        .gallery-thumbs img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 2px solid #ccc;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .size-chips {
+            display: flex;
+            gap: 6px;
+            margin-top: 5px;
+        }
+        .size-chip {
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            background: #fff;
+            font-weight: bold;
+        }
+        .size-chip.active-size {
+            background: #2874f0;
+            color: white;
+            border-color: #2874f0;
+        }
+        .big-buy-btn {
+            background: #2874f0;
+            color: white;
+            border: none;
+            padding: 11px;
+            width: 100%;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(40,116,240,0.3);
+            margin-top: 10px;
+            text-align: center;
+        }
+        .status-badge {
+            display: inline-block;
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-top: 3px;
+        }
+        #successOverlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #2e7d32;
+            z-index: 2000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 15px;
+        }
+        .success-icon {
+            font-size: 45px;
+            background: white;
+            color: #2e7d32;
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        nav {
+            position: fixed;
+            bottom: 0; left: 0;
+            width: 100%;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 6px 0;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        .nav-item {
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            cursor: pointer;
+            flex: 1;
+        }
+        .nav-item.active {
+            color: #2874f0;
+            font-weight: bold;
+        }
+        .nav-item span { font-size: 16px; display: block; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-top">
+            <div class="logo">🛍️ ZK Loot Bazaar</div>
+            <div style="font-size: 11px; background: #ff9f00; color: #000; padding: 3px 8px; border-radius: 4px; font-weight: bold; cursor:pointer;" onclick="openAddProductModal()">➕ Add Product</div>
+        </div>
+        <input type="text" class="search-bar" id="searchInput" placeholder="Search shoes, kurta, electronics, decor..." onkeyup="filterProducts()">
+    </header>
+
+    <div class="container">
+
+        <!-- 1. HOME SECTION -->
+        <div id="homeSection" class="section-view active">
+            <div class="sale-banner-box">
+                <div class="sale-title">🔥 Blockbuster Sale Mode<br><span style="font-size:10px; opacity:0.9;">Turn ON for 30% OFF on all items!</span></div>
+                <label class="switch">
+                    <input type="checkbox" id="blockbusterToggle" onchange="toggleBlockbusterSale()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div id="blockbusterPoster" class="blockbuster-poster">
+                <h2 style="font-size: 18px; margin-bottom: 4px;">⚡ BLOCKBUSTER DEALS LIVE! ⚡</h2>
+                <p style="font-size: 12px; font-weight: bold;">Flat 30% OFF Applied Automatically! 🚀</p>
+            </div>
+
+            <div class="cat-scroll">
+                <div class="cat-chip active" onclick="filterCat('All', this)">All</div>
+                <div class="cat-chip" onclick="filterCat('Electronics', this)">⚡ Electronics</div>
+                <div class="cat-chip" onclick="filterCat('Decor', this)">🏠 Decor</div>
+                <div class="cat-chip" onclick="filterCat('Shoes', this)">👟 Shoes</div>
+                <div class="cat-chip" onclick="filterCat('Cloth', this)">👕 Clothes</div>
+                <div class="cat-chip" onclick="filterCat('Kurta', this)">🧥 Kurta</div>
+                <div class="cat-chip" onclick="filterCat('Plastic', this)">♻️ Plastic</div>
+            </div>
+
+            <div class="product-grid" id="productGrid"></div>
+        </div>
+
+        <!-- 2. CATEGORIES SECTION -->
+        <div id="categorySection" class="section-view">
+            <h2 style="font-size: 15px; margin-bottom: 8px;">All Categories</h2>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <div class="card-box" onclick="filterCat('Electronics', null); switchTab('home')" style="cursor: pointer; display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                    <span>⚡ Electronics Items</span> <span>➔</span>
+                </div>
+                <div class="card-box" onclick="filterCat('Decor', null); switchTab('home')" style="cursor: pointer; display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                    <span>🏠 Home Decor</span> <span>➔</span>
+                </div>
+                <div class="card-box" onclick="filterCat('Shoes', null); switchTab('home')" style="cursor: pointer; display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                    <span>👟 Shoes & Footwear</span> <span>➔</span>
+                </div>
+                <div class="card-box" onclick="filterCat('Kurta', null); switchTab('home')" style="cursor: pointer; display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                    <span>🧥 Kurta, Shirt & T-Shirts</span> <span>➔</span>
+                </div>
+                <div class="card-box" onclick="filterCat('Plastic', null); switchTab('home')" style="cursor: pointer; display:flex; justify-content:space-between; align-items:center; font-size: 13px;">
+                    <span>♻️ Plastic Materials</span> <span>➔</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. PRODUCT DETAIL PAGE -->
+        <div id="detailSection" class="section-view">
+            <div style="margin-bottom: 6px;">
+                <button onclick="switchTab('home')" style="background: none; border: none; color: #2874f0; font-weight: bold; cursor: pointer; font-size: 13px;">← Back</button>
+            </div>
+            <div class="card-box">
+                <div class="meesho-slider" id="meeshoSliderImages"></div>
+                <p style="font-size: 10px; color: #666; text-align: center; margin-top: 4px;">↔️ Swipe photos left/right</p>
+                <div class="gallery-thumbs" id="detailThumbs"></div>
+            </div>
+
+            <div class="card-box">
+                <h2 id="detailTitle" style="font-size: 14px; color: #212121; margin-bottom: 4px;"></h2>
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                    <span id="detailPrice" style="font-size: 16px; font-weight: bold; color: #388e3c;"></span>
+                    <span id="detailOldPrice" style="font-size: 12px; color: #878787; text-decoration: line-through;"></span>
+                </div>
+                <div id="detailRating" style="font-size: 12px; background: #388e3c; color: white; display: inline-block; padding: 2px 6px; border-radius: 3px; font-weight: bold; margin-bottom: 8px;"></div>
+                
+                <div id="sizeSection" style="margin-bottom: 8px; display: none;">
+                    <label style="font-size: 11px; font-weight: bold; color: #555; display: block; margin-bottom: 3px;">Select Size:</label>
+                    <div class="size-chips" id="sizeChipsContainer">
+                        <div class="size-chip active-size" onclick="selectSize('S', this)">S</div>
+                        <div class="size-chip" onclick="selectSize('M', this)">M</div>
+                        <div class="size-chip" onclick="selectSize('L', this)">L</div>
+                        <div class="size-chip" onclick="selectSize('XL', this)">XL</div>
+                        <div class="size-chip" onclick="selectSize('XXL', this)">XXL</div>
+                    </div>
+                </div>
+
+                <div style="font-size: 12px; color: #555; display: flex; flex-direction: column; gap: 4px; border-top: 1px solid #eee; padding-top: 8px;">
+                    <div>🎨 <b>Color:</b> <span id="detailColor"></span></div>
+                    <div>🛡️ <b>Warranty:</b> <span id="detailWarranty"></span></div>
+                    <div>🚚 <b>Delivery:</b> <span id="detailDelivery" style="color: #d97706; font-weight: bold;"></span></div>
+                </div>
+
+                <button class="big-buy-btn" onclick="proceedToCheckoutFromDetail()">BUY NOW</button>
+            </div>
+
+            <h3 style="font-size: 13px; margin: 10px 0 6px 0; color: #333;">✨ Similar Recommended</h3>
+            <div class="product-grid" id="recommendedGrid"></div>
+        </div>
+
+        <!-- 4. CHECKOUT SECTION -->
+        <div id="checkoutSection" class="section-view">
+            <h2 style="font-size: 15px; margin-bottom: 8px;">📦 Order Checkout</h2>
+            <div class="card-box" id="checkoutProductDetails" style="display: flex; gap: 10px; align-items: center;"></div>
+
+            <div class="card-box">
+                <h3 style="font-size: 13px; margin-bottom: 6px; color: #2874f0;">💳 Payment Mode</h3>
+                <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px;">
+                    <label><input type="radio" name="payMode" value="COD" checked onclick="calcTotal()"> Cash on Delivery (COD)</label>
+                    <label><input type="radio" name="payMode" value="UPI" onclick="calcTotal()"> Online UPI <span style="color: #388e3c; font-weight: bold;">(Extra 20% OFF!)</span></label>
+                </div>
+                <div id="priceBreakdown" style="margin-top: 8px; font-size: 13px; border-top: 1px solid #eee; padding-top: 6px;"></div>
+            </div>
+
+            <div class="card-box">
+                <h3 style="font-size: 13px; margin-bottom: 6px; color: #2874f0;">📍 Address Details</h3>
+                <div class="form-group"><label>Mobile</label><input type="tel" id="chkMobile" class="form-control" placeholder="10-digit mobile" maxlength="10"></div>
+                <div class="form-group"><label>Plot / House / Street</label><input type="text" id="chkPlot" class="form-control" placeholder="Plot / Street"></div>
+                <div class="form-group"><label>City</label><input type="text" id="chkCity" class="form-control" placeholder="City name"></div>
+                <div class="form-group"><label>State</label><input type="text" id="chkState" class="form-control" placeholder="State"></div>
+                <div class="form-group"><label>Pincode</label><input type="number" id="chkPin" class="form-control" placeholder="Pincode"></div>
+                <button class="btn-submit" onclick="confirmOrderFinal()">Confirm Order 🎉</button>
+            </div>
+        </div>
+
+        <!-- 5. ORDERS SECTION -->
+        <div id="ordersSection" class="section-view">
+            <h2 style="font-size: 15px; margin-bottom: 8px;">My Confirm
