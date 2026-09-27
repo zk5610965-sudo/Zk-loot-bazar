@@ -14,7 +14,7 @@
         body {
             background-color: #f1f3f6;
             color: #212121;
-            padding-bottom: 70px;
+            padding-bottom: 60px;
         }
         header {
             background: #2874f0;
@@ -95,7 +95,7 @@
             display: none;
             background: linear-gradient(45deg, #d32f2f, #c2185b);
             color: white;
-            padding: 12px;
+            padding: 15px;
             border-radius: 6px;
             text-align: center;
             margin-bottom: 8px;
@@ -146,6 +146,7 @@
             background: #e0e0e0;
             cursor: pointer;
         }
+        /* Custom Badge Styles */
         .badge-trusted {
             position: absolute;
             top: 6px;
@@ -172,6 +173,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             z-index: 5;
         }
+
         .product-info {
             padding: 8px;
             display: flex;
@@ -204,9 +206,10 @@
             display: flex;
             gap: 4px;
             margin-top: 4px;
-            padding: 0 8px 8px 8px;
         }
-        .btn-edit, .btn-delete {
+        .btn-edit {
+            background: #17a2b8;
+            color: white;
             border: none;
             padding: 4px;
             font-size: 10px;
@@ -214,11 +217,18 @@
             border-radius: 3px;
             cursor: pointer;
             flex: 1;
-            color: white;
         }
-        .btn-edit { background: #17a2b8; }
-        .btn-delete { background: #dc3545; }
-        
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            border-radius: 3px;
+            cursor: pointer;
+            flex: 1;
+        }
         .section-view { display: none; }
         .section-view.active { display: block; }
         .card-box {
@@ -320,6 +330,16 @@
             box-shadow: 0 2px 6px rgba(40,116,240,0.3);
             margin-top: 10px;
             text-align: center;
+        }
+        .status-badge {
+            display: inline-block;
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-top: 3px;
         }
         #successOverlay {
             display: none;
@@ -502,286 +522,424 @@
 
         <!-- 5. ORDERS SECTION -->
         <div id="ordersSection" class="section-view">
-            <h2 style="font-size: 15px; margin-bottom: 8px;">📦 My Orders</h2>
-            <div id="ordersListContainer"></div>
+            <h2 style="font-size: 15px; margin-bottom: 8px;">My Confirmed Orders</h2>
+            <div id="ordersListContainer">
+                <div class="card-box" style="text-align: center; color: #777; padding: 20px;"><p style="font-size:12px;">No orders yet.</p></div>
+            </div>
         </div>
 
-        <!-- 6. ADD/EDIT PRODUCT MODAL VIEW (Inline Card) -->
-        <div id="adminModalSection" class="section-view">
+        <!-- 6. PROFILE SECTION -->
+        <div id="profileSection" class="section-view">
+            <h2 style="font-size: 15px; margin-bottom: 8px;">Profile</h2>
+            <div class="card-box" style="margin-bottom: 10px;">
+                <h3 style="font-size: 14px; color: #2874f0; margin-bottom: 3px;">👤 ZK Reseller Store</h3>
+                <p style="font-size: 12px; color: #666;">Amravati, Maharashtra, India</p>
+            </div>
             <div class="card-box">
-                <h2 id="modalHeaderTitle" style="font-size: 15px; margin-bottom: 8px; color:#2874f0;">Add New Product</h2>
-                <input type="hidden" id="editIndex" value="-1">
-                <div class="form-group"><label>Product Title</label><input type="text" id="pTitleInput" class="form-control" placeholder="e.g., Stylish Men Kurta"></div>
-                <div class="form-group"><label>Price (₹)</label><input type="number" id="pPriceInput" class="form-control" placeholder="499"></div>
-                <div class="form-group"><label>Old Price (₹)</label><input type="number" id="pOldPriceInput" class="form-control" placeholder="999"></div>
+                <h3 style="font-size: 14px; color: #333; margin-bottom: 6px;">🎧 Support</h3>
+                <p style="font-size: 12px; color: #666; margin-bottom: 6px;">Helpline: +91 9876543210</p>
+            </div>
+        </div>
+
+        <!-- 7. ADMIN / EDIT PRODUCT WITH BADGE OPTIONS -->
+        <div id="adminSection" class="section-view">
+            <div style="margin-bottom: 6px;">
+                <button onclick="switchTab('home')" style="background: none; border: none; color: #2874f0; font-weight: bold; cursor: pointer; font-size: 13px;">← Back</button>
+            </div>
+
+            <h2 id="adminFormTitle" style="font-size: 15px; margin-bottom: 8px;">Upload / Edit Product & Badge</h2>
+            <div class="card-box">
+                <input type="hidden" id="editProductId" value="">
+                <div class="form-group"><label>Title</label><input type="text" id="newTitle" class="form-control" placeholder="Product name"></div>
                 <div class="form-group">
                     <label>Category</label>
-                    <select id="pCatInput" class="form-control">
+                    <select id="newCat" class="form-control">
                         <option value="Electronics">Electronics</option>
                         <option value="Decor">Decor</option>
                         <option value="Shoes">Shoes</option>
                         <option value="Cloth">Cloth</option>
-                        <option value="Kurta">Kurta</option>
-                        <option value="Plastic">Plastic</option>
+                        <option value="Kurta">Kurta & Shirt</option>
+                        <option value="Plastic">Plastic Material</option>
                     </select>
                 </div>
+                <div class="form-group"><label>Price (₹)</label><input type="number" id="newPrice" class="form-control" placeholder="Price"></div>
+                
+                <!-- BADGE SELECTOR OPTION -->
                 <div class="form-group">
-                    <label>Badge Type</label>
-                    <select id="pBadgeInput" class="form-control">
-                        <option value="trusted">Trusted Blue Badge</option>
-                        <option value="bestseller">Best Seller Yellow Badge</option>
-                        <option value="none">None</option>
+                    <label style="color: #2874f0; font-weight: bold;">⭐ Select Badge (Optional):</label>
+                    <select id="newBadge" class="form-control">
+                        <option value="none">No Badge</option>
+                        <option value="trusted">🛡️ Trusted Seller (Blue Badge)</option>
+                        <option value="bestseller">🔥 Best Seller (Yellow Badge)</option>
                     </select>
                 </div>
-                <div class="form-group"><label>Image URLs (Comma separated for multiple photos)</label><textarea id="pImagesInput" class="form-control" rows="3" placeholder="https://image1.jpg, https://image2.jpg"></textarea></div>
-                <div class="form-group"><label>Color</label><input type="text" id="pColorInput" class="form-control" value="Multi"></div>
-                <div class="form-group"><label>Warranty</label><input type="text" id="pWarrantyInput" class="form-control" value="7 Days Return"></div>
-                <div class="form-group"><label>Delivery Info</label><input type="text" id="pDeliveryInput" class="form-control" value="Free Delivery"></div>
-                <div style="display: flex; gap: 6px;">
-                    <button class="btn-submit" onclick="saveAdminProduct()">Save Product</button>
-                    <button class="btn-submit" style="background:#6c757d;" onclick="switchTab('home')">Cancel</button>
+
+                <div class="form-group">
+                    <label style="color: #2874f0; font-weight: bold;">📁 Select Multiple Photos:</label>
+                    <input type="file" id="multiImagePicker" class="form-control" accept="image/*" multiple="multiple" onchange="handleMultipleImages(event)">
+                    <div id="adminCropPreview" class="gallery-thumbs" style="margin-top: 6px;"></div>
                 </div>
+
+                <div class="form-group"><label>Color</label><input type="text" id="newColor" class="form-control" placeholder="Color"></div>
+                <div class="form-group"><label>Warranty</label><input type="text" id="newWarranty" class="form-control" placeholder="Warranty"></div>
+                <div class="form-group"><label>Rating</label><input type="text" id="newRating" class="form-control" placeholder="Rating"></div>
+                
+                <button class="btn-submit" id="saveProductBtn" onclick="saveProductData()">Publish Live 🚀</button>
             </div>
         </div>
 
     </div>
 
-    <!-- SUCCESS OVERLAY -->
+    <!-- Success Overlay -->
     <div id="successOverlay">
         <div class="success-icon">✓</div>
-        <h2 style="margin-bottom: 8px;">Order Placed Successfully!</h2>
-        <p style="font-size: 13px; margin-bottom: 15px;">Your order has been registered. Seller will contact you soon.</p>
-        <button class="btn-submit" style="background: white; color: #2e7d32; width: auto; padding: 8px 20px;" onclick="closeSuccessOverlay()">Back to Home</button>
+        <h1 style="font-size: 20px; margin-bottom: 6px;">Order Confirmed!</h1>
+        <p style="font-size: 12px; opacity: 0.9; margin-bottom: 12px;">Order successfully placed.</p>
+        <button onclick="closeSuccessOverlay()" style="background: white; color: #2e7d32; border: none; padding: 8px 18px; font-weight: bold; border-radius: 15px; cursor: pointer; font-size: 13px;">View Orders</button>
     </div>
 
-    <!-- BOTTOM NAVIGATION -->
+    <!-- Bottom Navigation Bar -->
     <nav>
-        <div class="nav-item active" id="nav-home" onclick="switchTab('home')">
-            <span>🏠</span>Home
-        </div>
-        <div class="nav-item" id="nav-category" onclick="switchTab('category')">
-            <span>📂</span>Categories
-        </div>
-        <div class="nav-item" id="nav-orders" onclick="switchTab('orders')">
-            <span>📦</span>Orders
-        </div>
+        <div class="nav-item active" id="navHome" onclick="switchTab('home')"><span>🏠</span>Home</div>
+        <div class="nav-item" id="navCategory" onclick="switchTab('category')"><span>📂</span>Categories</div>
+        <div class="nav-item" id="navOrders" onclick="switchTab('orders')"><span>📦</span>Orders</div>
+        <div class="nav-item" id="navProfile" onclick="switchTab('profile')"><span>👤</span>Profile</div>
     </nav>
 
     <script>
-        let defaultProducts = [
-            {
-                title: "Men Cotton Casual Kurta & Pyjama Set",
-                price: 499,
-                oldPrice: 1299,
-                category: "Kurta",
-                badge: "bestseller",
-                images: [
-                    "https://images.unsplash.com/photo-1597983073493-87a3cb5a3cbd?w=500",
-                    "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=500"
-                ],
-                color: "Sky Blue",
-                warranty: "7 Days Easy Return",
-                delivery: "Free Delivery by Tomorrow"
-            },
-            {
-                title: "Running Sports Shoes for Men",
-                price: 699,
-                oldPrice: 1599,
-                category: "Shoes",
-                badge: "trusted",
-                images: [
-                    "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500",
-                    "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=500"
-                ],
-                color: "Neon Red",
-                warranty: "3 Months Warranty",
-                delivery: "Free Delivery"
-            },
-            {
-                title: "Wireless Bluetooth Smart Earbuds",
-                price: 899,
-                oldPrice: 2499,
-                category: "Electronics",
-                badge: "bestseller",
-                images: [
-                    "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500",
-                    "https://images.unsplash.com/photo-1572536147248-ac59a8abfa4b?w=500"
-                ],
-                color: "Matte Black",
-                warranty: "1 Year Brand Warranty",
-                delivery: "Free Fast Delivery"
-            },
-            {
-                title: "Modern LED Wall Decor Lamp",
-                price: 399,
-                oldPrice: 999,
-                category: "Decor",
-                badge: "trusted",
-                images: [
-                    "https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=500",
-                    "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=500"
-                ],
-                color: "Warm Gold",
-                warranty: "Replacement Guarantee",
-                delivery: "Free Delivery"
-            }
+        function getAutoDeliveryDate() {
+            let targetDate = new Date();
+            targetDate.setDate(targetDate.getDate() + 7);
+            return targetDate.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) + " (7 Days)";
+        }
+
+        let presetImages = [
+            "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=300",
+            "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300",
+            "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300",
+            "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300",
+            "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=300",
+            "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=300",
+            "https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=300",
+            "https://images.unsplash.com/photo-1584467735811-628a8d4624d8?w=300"
         ];
 
-        let products = JSON.parse(localStorage.getItem('zk_products')) || defaultProducts;
-        let orders = JSON.parse(localStorage.getItem('zk_orders')) || [];
-        let currentFilter = 'All';
-        let currentSelectedProduct = null;
+        let catsList = ["Electronics", "Decor", "Shoes", "Cloth", "Kurta", "Plastic"];
+        let initial50LiveProducts = [];
+
+        for(let i = 1; i <= 50; i++) {
+            let cat = catsList[i % catsList.length];
+            let img1 = presetImages[i % presetImages.length];
+            let img2 = presetImages[(i + 1) % presetImages.length];
+            let img3 = presetImages[(i + 2) % presetImages.length];
+            initial50LiveProducts.push({
+                id: i,
+                title: `Loot Item #${i} - Special ${cat} Deal`,
+                category: cat,
+                basePrice: 199 + (i * 35) % 800,
+                oldPrice: 999 + (i * 60),
+                img: img1,
+                gallery: [img1, img2, img3, img1],
+                color: "Assorted",
+                warranty: "6 Months Warranty",
+                delivery: getAutoDeliveryDate(),
+                rating: "4.5 ★",
+                badge: i % 3 === 0 ? "trusted" : (i % 5 === 0 ? "bestseller" : "none")
+            });
+        }
+
+        let products = JSON.parse(localStorage.getItem('zk_loot_v12')) || initial50LiveProducts;
+        let ordersList = JSON.parse(localStorage.getItem('zk_orders_v12')) || [];
+        let activeProduct = null;
         let selectedSize = 'S';
+        let tempGalleryImages = [];
         let isBlockbusterActive = false;
 
-        function saveToStorage() {
-            localStorage.setItem('zk_products', JSON.stringify(products));
-            localStorage.setItem('zk_orders', JSON.stringify(orders));
+        function toggleBlockbusterSale() {
+            let toggle = document.getElementById('blockbusterToggle');
+            let poster = document.getElementById('blockbusterPoster');
+            isBlockbusterActive = toggle.checked;
+            poster.style.display = isBlockbusterActive ? 'block' : 'none';
+            renderProducts(products);
         }
 
-        function switchTab(tab) {
-            document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        function getEffectivePrice(p) {
+            let base = p.basePrice !== undefined ? p.basePrice : p.price;
+            return isBlockbusterActive ? Math.round(base * 0.70) : base;
+        }
 
-            if(tab === 'home') {
-                document.getElementById('homeSection').classList.add('active');
-                document.getElementById('nav-home').classList.add('active');
-                renderProducts();
-            } else if(tab === 'category') {
-                document.getElementById('categorySection').classList.add('active');
-                document.getElementById('nav-category').classList.add('active');
-            } else if(tab === 'orders') {
-                document.getElementById('ordersSection').classList.add('active');
-                document.getElementById('nav-orders').classList.add('active');
-                renderOrders();
-            } else if(tab === 'detail') {
-                document.getElementById('detailSection').classList.add('active');
-            } else if(tab === 'checkout') {
-                document.getElementById('checkoutSection').classList.add('active');
-            } else if(tab === 'admin') {
-                document.getElementById('adminModalSection').classList.add('active');
+        function saveProducts() {
+            try {
+                localStorage.setItem('zk_loot_v12', JSON.stringify(products));
+                return true;
+            } catch(e) {
+                alert("Storage full!");
+                return false;
             }
-            window.scrollTo(0,0);
         }
 
-        function renderProducts(filteredList = null) {
-            let grid = document.getElementById('productGrid');
-            let list = filteredList || products;
-            grid.innerHTML = '';
+        function saveOrders() {
+            localStorage.setItem('zk_orders_v12', JSON.stringify(ordersList));
+        }
 
+        function handleMultipleImages(event) {
+            let files = event.target.files;
+            tempGalleryImages = [];
+            let previewBox = document.getElementById('adminCropPreview');
+            previewBox.innerHTML = "";
+
+            if(files && files.length > 0) {
+                for(let i = 0; i < files.length; i++) {
+                    let reader = new FileReader();
+                    reader.onload = function(e) {
+                        let img = new Image();
+                        img.src = e.target.result;
+                        img.onload = function() {
+                            let canvas = document.createElement('canvas');
+                            let ctx = canvas.getContext('2d');
+                            let w = img.width, h = img.height;
+                            let max = 350;
+                            if(w > h && w > max) { h *= max/w; w = max; }
+                            else if(h > max) { w *= max/h; h = max; }
+                            canvas.width = w; canvas.height = h;
+                            ctx.drawImage(img, 0, 0, w, h);
+                            let dataurl = canvas.toDataURL('image/jpeg', 0.75);
+
+                            tempGalleryImages.push(dataurl);
+                            previewBox.innerHTML += `<img src="${dataurl}" style="width:50px; height:50px; object-fit:cover; border-radius:4px; border:2px solid #2874f0;">`;
+                        }
+                    }
+                    reader.readAsDataURL(files[i]);
+                }
+            }
+        }
+
+        function renderProducts(list) {
+            let grid = document.getElementById('productGrid');
+            grid.innerHTML = "";
             if(list.length === 0) {
-                grid.innerHTML = '<p style="grid-column: span 2; text-align:center; padding:20px; color:#666; font-size:13px;">No products found.</p>';
+                grid.innerHTML = `<p style="grid-column: span 2; text-align:center; color:#777; padding:15px; font-size:12px;">No products found!</p>`;
+                return;
+            }
+            list.forEach(p => {
+                let currentPrice = getEffectivePrice(p);
+                let priceHtml = isBlockbusterActive ? 
+                    `<span class="p-price">₹${currentPrice}</span> <span style="font-size:10px; color:#d97706; font-weight:bold;">(30% OFF)</span>` :
+                    `<span class="p-price">₹${currentPrice}</span><span class="p-old-price">₹${p.oldPrice}</span>`;
+
+                let badgeHtml = "";
+                if(p.badge === 'trusted') {
+                    badgeHtml = `<div class="badge-trusted">🛡️ Trusted</div>`;
+                } else if(p.badge === 'bestseller') {
+                    badgeHtml = `<div class="badge-bestseller">🔥 Best Seller</div>`;
+                }
+
+                grid.innerHTML += `
+                    <div class="product-card">
+                        ${badgeHtml}
+                        <img src="${p.img}" alt="Product" onclick="openProductDetail(${p.id})">
+                        <div class="product-info">
+                            <div class="p-title" onclick="openProductDetail(${p.id})">${p.title}</div>
+                            <div>${priceHtml}</div>
+                            <div class="admin-action-row">
+                                <button class="btn-edit" onclick="openEditProductModal(${p.id})">Edit</button>
+                                <button class="btn-delete" onclick="deleteProduct(${p.id})">Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.section-view').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+
+            if(tabName === 'home') {
+                document.getElementById('homeSection').classList.add('active');
+                document.getElementById('navHome').classList.add('active');
+            } else if(tabName === 'category') {
+                document.getElementById('categorySection').classList.add('active');
+                document.getElementById('navCategory').classList.add('active');
+            } else if(tabName === 'orders') {
+                document.getElementById('ordersSection').classList.add('active');
+                document.getElementById('navOrders').classList.add('active');
+                renderOrders();
+            } else if(tabName === 'profile') {
+                document.getElementById('profileSection').classList.add('active');
+                document.getElementById('navProfile').classList.add('active');
+            } else if(tabName === 'admin') {
+                document.getElementById('adminSection').classList.add('active');
+            }
+            window.scrollTo(0, 0);
+        }
+
+        function openAddProductModal() {
+            document.getElementById('editProductId').value = "";
+            document.getElementById('adminFormTitle').innerText = "Upload Product";
+            document.getElementById('newTitle').value = "";
+            document.getElementById('newPrice').value = "";
+            document.getElementById('newBadge').value = "none";
+            document.getElementById('multiImagePicker').value = "";
+            document.getElementById('adminCropPreview').innerHTML = "";
+            tempGalleryImages = [];
+            document.getElementById('newColor').value = "";
+            document.getElementById('newWarranty').value = "";
+            document.getElementById('newRating').value = "";
+            document.getElementById('saveProductBtn').innerText = "Publish Live 🚀";
+            switchTab('admin');
+        }
+
+        function openEditProductModal(id) {
+            let p = products.find(item => item.id === id);
+            if(!p) return;
+
+            document.getElementById('editProductId').value = p.id;
+            document.getElementById('adminFormTitle').innerText = "Edit Product & Badge";
+            document.getElementById('newTitle').value = p.title;
+            document.getElementById('newCat').value = p.category;
+            document.getElementById('newPrice').value = p.basePrice !== undefined ? p.basePrice : p.price;
+            document.getElementById('newBadge').value = p.badge || "none";
+            document.getElementById('multiImagePicker').value = "";
+            
+            tempGalleryImages = p.gallery || [p.img];
+            let preview = document.getElementById('adminCropPreview');
+            preview.innerHTML = "";
+            tempGalleryImages.forEach(imgUrl => {
+                preview.innerHTML += `<img src="${imgUrl}" style="width:50px; height:50px; object-fit:cover; border-radius:4px; border:2px solid #2874f0;">`;
+            });
+
+            document.getElementById('newColor').value = p.color || "";
+            document.getElementById('newWarranty').value = p.warranty || "";
+            document.getElementById('newRating').value = p.rating || "";
+            document.getElementById('saveProductBtn').innerText = "Update 🔄";
+            switchTab('admin');
+        }
+
+        function saveProductData() {
+            let editId = document.getElementById('editProductId').value;
+            let title = document.getElementById('newTitle').value.trim();
+            let cat = document.getElementById('newCat').value;
+            let price = document.getElementById('newPrice').value.trim();
+            let badge = document.getElementById('newBadge').value;
+            let color = document.getElementById('newColor').value.trim();
+            let warranty = document.getElementById('newWarranty').value.trim();
+            let rating = document.getElementById('newRating').value.trim();
+
+            if(!title || !price) {
+                alert("Enter Title and Price!");
                 return;
             }
 
-            list.forEach((p, index) => {
-                let actualPrice = isBlockbusterActive ? Math.round(p.price * 0.7) : p.price;
-                let badgeHTML = '';
-                if(p.badge === 'trusted') badgeHTML = '<div class="badge-trusted">🛡️ Trusted</div>';
-                if(p.badge === 'bestseller') badgeHTML = '<div class="badge-bestseller">⭐ Best Seller</div>';
+            let finalGallery = tempGalleryImages.length > 0 ? tempGalleryImages : [presetImages[0]];
+            let mainImage = finalGallery[0];
+            let autoDeliv = getAutoDeliveryDate();
 
-                let card = document.createElement('div');
-                card.className = 'product-card';
-                card.innerHTML = `
-                    ${badgeHTML}
-                    <img src="${p.images[0]}" onclick="openProductDetail(${index})">
-                    <div class="product-info">
-                        <div class="p-title" onclick="openProductDetail(${index})">${p.title}</div>
-                        <div>
-                            <span class="p-price">₹${actualPrice}</span>
-                            <span class="p-old-price">₹${p.oldPrice}</span>
-                        </div>
-                    </div>
-                    <div class="admin-action-row">
-                        <button class="btn-edit" onclick="openEditProduct(${index})">Edit</button>
-                        <button class="btn-delete" onclick="deleteProduct(${index})">Delete</button>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
-
-        function filterCat(cat, element) {
-            currentFilter = cat;
-            if(element) {
-                document.querySelectorAll('.cat-chip').forEach(el => el.classList.remove('active'));
-                element.classList.add('active');
-            }
-            if(cat === 'All') {
-                renderProducts();
+            if(editId !== "") {
+                let p = products.find(item => item.id == editId);
+                if(p) {
+                    p.title = title;
+                    p.category = cat;
+                    p.basePrice = Number(price);
+                    p.price = Number(price);
+                    p.oldPrice = Number(price) + 400;
+                    p.badge = badge;
+                    p.img = mainImage;
+                    p.gallery = finalGallery;
+                    p.color = color || "Multi";
+                    p.warranty = warranty || "Standard";
+                    p.delivery = autoDeliv;
+                    p.rating = rating || "4.5 ★";
+                }
+                alert("✅ Updated successfully!");
             } else {
-                let filtered = products.filter(p => p.category.toLowerCase() === cat.toLowerCase());
-                renderProducts(filtered);
+                let newP = {
+                    id: Date.now(),
+                    title: title,
+                    category: cat,
+                    basePrice: Number(price),
+                    price: Number(price),
+                    oldPrice: Number(price) + 400,
+                    badge: badge,
+                    img: mainImage,
+                    gallery: finalGallery,
+                    color: color || "Multi",
+                    warranty: warranty || "Standard",
+                    delivery: autoDeliv,
+                    rating: rating || "4.5 ★"
+                };
+                products.unshift(newP);
+                alert("✅ Published live successfully with badge!");
+            }
+
+            if(saveProducts()) {
+                tempGalleryImages = [];
+                filterCat('All', document.querySelector('.cat-chip'));
+                switchTab('home');
             }
         }
 
-        function filterProducts() {
-            let query = document.getElementById('searchInput').value.toLowerCase();
-            let filtered = products.filter(p => p.title.toLowerCase().includes(query) || p.category.toLowerCase().includes(query));
-            renderProducts(filtered);
+        function deleteProduct(id) {
+            if(confirm("Delete this product?")) {
+                products = products.filter(p => p.id !== id);
+                saveProducts();
+                renderProducts(products);
+            }
         }
 
-        function toggleBlockbusterSale() {
-            isBlockbusterActive = document.getElementById('blockbusterToggle').checked;
-            let poster = document.getElementById('blockbusterPoster');
-            poster.style.display = isBlockbusterActive ? 'block' : 'none';
-            renderProducts();
-        }
+        function openProductDetail(id) {
+            activeProduct = products.find(p => p.id === id);
+            if(!activeProduct) return;
 
-        function openProductDetail(index) {
-            currentSelectedProduct = products[index];
-            switchTab('detail');
+            let currentDetailPrice = getEffectivePrice(activeProduct);
+            let badgeText = activeProduct.badge === 'trusted' ? ' 🛡️ [Trusted Seller]' : (activeProduct.badge === 'bestseller' ? ' 🔥 [Best Seller]' : '');
 
-            let slider = document.getElementById('meeshoSliderImages');
-            let thumbs = document.getElementById('detailThumbs');
-            slider.innerHTML = '';
-            thumbs.innerHTML = '';
-
-            currentSelectedProduct.images.forEach((img, i) => {
-                let imageTag = document.createElement('img');
-                imageTag.src = img;
-                slider.appendChild(imageTag);
-
-                let thumbTag = document.createElement('img');
-                thumbTag.src = img;
-                thumbTag.onclick = () => {
-                    slider.scrollTo({ left: i * slider.clientWidth, behavior: 'smooth' });
-                };
-                thumbs.appendChild(thumbTag);
-            });
-
-            let finalPrice = isBlockbusterActive ? Math.round(currentSelectedProduct.price * 0.7) : currentSelectedProduct.price;
-            document.getElementById('detailTitle').innerText = currentSelectedProduct.title;
-            document.getElementById('detailPrice').innerText = '₹' + finalPrice;
-            document.getElementById('detailOldPrice').innerText = '₹' + currentSelectedProduct.oldPrice;
-            document.getElementById('detailRating').innerText = '★ 4.3 (Reseller Rated)';
-            document.getElementById('detailColor').innerText = currentSelectedProduct.color || 'Standard';
-            document.getElementById('detailWarranty').innerText = currentSelectedProduct.warranty || '7 Days Return';
-            document.getElementById('detailDelivery').innerText = currentSelectedProduct.delivery || 'Free Delivery';
+            document.getElementById('detailTitle').innerText = activeProduct.title + badgeText;
+            document.getElementById('detailPrice').innerText = `₹${currentDetailPrice}`;
+            document.getElementById('detailOldPrice').innerText = `₹${activeProduct.oldPrice}`;
+            document.getElementById('detailRating').innerText = activeProduct.rating || "4.5 ★";
+            document.getElementById('detailColor').innerText = activeProduct.color || "Standard";
+            document.getElementById('detailWarranty').innerText = activeProduct.warranty || "Standard";
+            document.getElementById('detailDelivery').innerText = activeProduct.delivery || getAutoDeliveryDate();
 
             let sizeSec = document.getElementById('sizeSection');
-            if(currentSelectedProduct.category === 'Kurta' || currentSelectedProduct.category === 'Cloth' || currentSelectedProduct.category === 'Shoes') {
+            if(activeProduct.category === 'Cloth' || activeProduct.category === 'Kurta') {
                 sizeSec.style.display = 'block';
+                selectedSize = 'S';
             } else {
                 sizeSec.style.display = 'none';
             }
 
+            let sliderBox = document.getElementById('meeshoSliderImages');
+            let thumbs = document.getElementById('detailThumbs');
+            let photos = activeProduct.gallery && activeProduct.gallery.length > 0 ? activeProduct.gallery : [activeProduct.img];
+
+            sliderBox.innerHTML = "";
+            thumbs.innerHTML = "";
+
+            photos.forEach((imgUrl, idx) => {
+                sliderBox.innerHTML += `<img src="${imgUrl}" alt="Slide">`;
+                thumbs.innerHTML += `<img src="${imgUrl}" onclick="document.getElementById('meeshoSliderImages').scrollTo({left: ${idx * 300}, behavior: 'smooth'})">`;
+            });
+
             let recGrid = document.getElementById('recommendedGrid');
-            recGrid.innerHTML = '';
-            let recs = products.filter((p, i) => i !== index).slice(0, 2);
-            recs.forEach((p, rIdx) => {
-                let rCard = document.createElement('div');
-                rCard.className = 'product-card';
-                let pActual = isBlockbusterActive ? Math.round(p.price * 0.7) : p.price;
-                rCard.innerHTML = `
-                    <img src="${p.images[0]}" onclick="openProductDetail(${products.indexOf(p)})">
-                    <div class="product-info">
-                        <div class="p-title" onclick="openProductDetail(${products.indexOf(p)})">${p.title}</div>
-                        <div><span class="p-price">₹${pActual}</span></div>
+            recGrid.innerHTML = "";
+            [...products].sort(() => 0.5 - Math.random()).slice(0, 4).forEach(rp => {
+                let rpPrice = getEffectivePrice(rp);
+                recGrid.innerHTML += `
+                    <div class="product-card" onclick="openProductDetail(${rp.id})">
+                        <img src="${rp.img}" alt="Product">
+                        <div class="product-info">
+                            <div class="p-title">${rp.title}</div>
+                            <div class="p-price">₹${rpPrice}</div>
+                        </div>
                     </div>
                 `;
-                recGrid.appendChild(rCard);
             });
+
+            document.querySelectorAll('.section-view').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('detailSection').classList.add('active');
+            window.scrollTo(0, 0);
         }
 
         function selectSize(size, el) {
@@ -791,165 +949,113 @@
         }
 
         function proceedToCheckoutFromDetail() {
-            switchTab('checkout');
-            let detBox = document.getElementById('checkoutProductDetails');
-            let finalPrice = isBlockbusterActive ? Math.round(currentSelectedProduct.price * 0.7) : currentSelectedProduct.price;
-            detBox.innerHTML = `
-                <img src="${currentSelectedProduct.images[0]}" style="width:60px; height:60px; object-fit:cover; border-radius:4px;">
+            if(!activeProduct) return;
+            let currentDetailPrice = getEffectivePrice(activeProduct);
+            let sizeText = (activeProduct.category === 'Cloth' || activeProduct.category === 'Kurta') ? ` | Size: <b>${selectedSize}</b>` : '';
+            document.getElementById('checkoutProductDetails').innerHTML = `
+                <img src="${activeProduct.img}" style="width: 55px; height: 55px; object-fit: cover; border-radius: 4px;">
                 <div>
-                    <div style="font-size:12px; font-weight:bold; color:#333;">${currentSelectedProduct.title}</div>
-                    <div style="font-size:11px; color:#666; margin-top:2px;">Size: <b>${selectedSize}</b> | Price: <b>₹${finalPrice}</b></div>
+                    <div style="font-weight: 600; font-size: 12px; color: #333;">${activeProduct.title} ${sizeText}</div>
+                    <div style="font-size: 14px; font-weight: bold; color: #388e3c; margin-top: 2px;">₹${currentDetailPrice}</div>
                 </div>
             `;
             calcTotal();
+            document.querySelectorAll('.section-view').forEach(sec => sec.classList.remove('active'));
+            document.getElementById('checkoutSection').classList.add('active');
+        }
+
+        function filterCat(cat, chipElement) {
+            if(chipElement) {
+                document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+                chipElement.classList.add('active');
+            }
+            if(cat === 'All') renderProducts(products);
+            else renderProducts(products.filter(p => p.category === cat));
+        }
+
+        function filterProducts() {
+            let q = document.getElementById('searchInput').value.toLowerCase();
+            renderProducts(products.filter(p => p.title.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)));
         }
 
         function calcTotal() {
-            let finalPrice = isBlockbusterActive ? Math.round(currentSelectedProduct.price * 0.7) : currentSelectedProduct.price;
-            let payMode = document.querySelector('input[name="payMode"]:checked').value;
-            let discount = payMode === 'UPI' ? Math.round(finalPrice * 0.2) : 0;
-            let total = finalPrice - discount;
-
-            let breakdown = document.getElementById('priceBreakdown');
-            breakdown.innerHTML = `
-                <div style="display:flex; justify-content:space-between; margin-bottom:3px;"><span>Selling Price:</span> <span>₹${finalPrice}</span></div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:3px; color:#388e3c;"><span>Online UPI Discount (20%):</span> <span>- ₹${discount}</span></div>
-                <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:14px; border-top:1px dashed #ccc; padding-top:4px;"><span>Final Payable:</span> <span style="color:#388e3c;">₹${total}</span></div>
+            if(!activeProduct) return;
+            let mode = document.querySelector('input[name="payMode"]:checked').value;
+            let price = getEffectivePrice(activeProduct);
+            let discHtml = "";
+            if(mode === 'UPI') {
+                let disc = Math.round(price * 0.20);
+                price -= disc;
+                discHtml = `<span style="color:#388e3c; font-weight:bold;">(20% UPI Off: -₹${disc})</span>`;
+            }
+            document.getElementById('priceBreakdown').innerHTML = `
+                <div>Effective Price: ₹${getEffectivePrice(activeProduct)}</div>
+                <div>Mode: <b>${mode}</b></div>
+                <div>${discHtml}</div>
+                <div style="font-size: 15px; font-weight: bold; color: #2874f0; margin-top: 4px;">Total: ₹${price}</div>
             `;
         }
 
         function confirmOrderFinal() {
-            let mobile = document.getElementById('chkMobile').value;
-            let plot = document.getElementById('chkPlot').value;
-            let city = document.getElementById('chkCity').value;
-            let state = document.getElementById('chkState').value;
-            let pin = document.getElementById('chkPin').value;
+            let mob = document.getElementById('chkMobile').value.trim();
+            let plot = document.getElementById('chkPlot').value.trim();
+            let city = document.getElementById('chkCity').value.trim();
+            let state = document.getElementById('chkState').value.trim();
+            let pin = document.getElementById('chkPin').value.trim();
+            let mode = document.querySelector('input[name="payMode"]:checked').value;
 
-            if(!mobile || mobile.length < 10 || !plot || !city || !state || !pin) {
-                alert("Please fill in all address details correctly!");
+            if(mob.length < 10 || !plot || !city || !state || !pin) {
+                alert("Fill all address details correctly!");
                 return;
             }
 
-            let finalPrice = isBlockbusterActive ? Math.round(currentSelectedProduct.price * 0.7) : currentSelectedProduct.price;
-            let payMode = document.querySelector('input[name="payMode"]:checked').value;
-            let discount = payMode === 'UPI' ? Math.round(finalPrice * 0.2) : 0;
-            let total = finalPrice - discount;
+            let price = getEffectivePrice(activeProduct);
+            if(mode === 'UPI') price -= Math.round(price * 0.20);
+            let sizeInfo = (activeProduct.category === 'Cloth' || activeProduct.category === 'Kurta') ? ` (Size: ${selectedSize})` : '';
 
-            let newOrder = {
-                title: currentSelectedProduct.title,
-                image: currentSelectedProduct.images[0],
-                size: selectedSize,
-                price: total,
-                payMode: payMode,
-                address: `${plot}, ${city}, ${state} - ${pin} (Mob: ${mobile})`,
-                date: new Date().toLocaleDateString()
-            };
-
-            orders.unshift(newOrder);
-            saveToStorage();
-
+            ordersList.unshift({
+                id: Date.now(),
+                title: activeProduct.title + sizeInfo,
+                img: activeProduct.img,
+                price: price,
+                payMode: mode,
+                address: `${plot}, ${city}, ${state} - ${pin} (Mob: ${mob})`,
+                date: new Date().toLocaleDateString(),
+                status: "📦 Confirmed & Packing"
+            });
+            saveOrders();
             document.getElementById('successOverlay').style.display = 'flex';
         }
 
         function closeSuccessOverlay() {
             document.getElementById('successOverlay').style.display = 'none';
-            switchTab('home');
+            switchTab('orders');
         }
 
         function renderOrders() {
-            let container = document.getElementById('ordersListContainer');
-            container.innerHTML = '';
-            if(orders.length === 0) {
-                container.innerHTML = '<div class="card-box" style="text-align:center; color:#666; font-size:13px;">No orders placed yet!</div>';
+            let c = document.getElementById('ordersListContainer');
+            if(ordersList.length === 0) {
+                c.innerHTML = `<div class="card-box" style="text-align: center; color: #777; padding: 20px;"><p style="font-size:12px;">No orders yet.</p></div>`;
                 return;
             }
-
-            orders.forEach(o => {
-                let box = document.createElement('div');
-                box.className = 'card-box';
-                box.innerHTML = `
-                    <div style="display:flex; gap:10px;">
-                        <img src="${o.image}" style="width:50px; height:50px; object-fit:cover; border-radius:4px;">
-                        <div>
-                            <div style="font-size:12px; font-weight:bold; color:#333;">${o.title}</div>
-                            <div style="font-size:11px; color:#555;">Size: <b>${o.size}</b> | Paid: <b>₹${o.price} (${o.payMode})</b></div>
-                            <div style="font-size:10px; color:#878787; margin-top:2px;">📍 ${o.address}</div>
-                            <div style="font-size:10px; color:#388e3c; margin-top:2px;"><b>Date:</b> ${o.date}</div>
+            c.innerHTML = "";
+            ordersList.forEach(o => {
+                c.innerHTML += `
+                    <div class="card-box" style="display:flex; gap:10px; align-items:flex-start;">
+                        <img src="${o.img}" style="width:50px; height:50px; object-fit:cover; border-radius:4px;">
+                        <div style="flex:1; font-size:12px;">
+                            <div style="font-weight:bold; color:#333;">${o.title}</div>
+                            <div style="color:#388e3c; font-weight:bold;">₹${o.price} (${o.payMode})</div>
+                            <div style="color:#666; font-size:10px; margin-top:2px;">📍 ${o.address}</div>
+                            <div class="status-badge">${o.status}</div>
                         </div>
                     </div>
                 `;
-                container.appendChild(box);
             });
         }
 
-        function openAddProductModal() {
-            document.getElementById('modalHeaderTitleinnerText = "Add New Product"');
-            document.getElementById('editIndex').value = -1;
-            document.getElementById('pTitleInput').value = '';
-            document.getElementById('pPriceInput').value = '';
-            document.getElementById('pOldPriceInput').value = '';
-            document.getElementById('pImagesInput').value = '';
-            switchTab('admin');
-        }
-
-        function openEditProduct(index) {
-            let p = products[index];
-            document.getElementById('modalHeaderTitle').innerText = "Edit Product";
-            document.getElementById('editIndex').value = index;
-            document.getElementById('pTitleInput').value = p.title;
-            document.getElementById('pPriceInput').value = p.price;
-            document.getElementById('pOldPriceInput').value = p.oldPrice;
-            document.getElementById('pCatInput').value = p.category;
-            document.getElementById('pBadgeInput').value = p.badge || 'none';
-            document.getElementById('pImagesInput').value = p.images.join(', ');
-            document.getElementById('pColorInput').value = p.color || 'Multi';
-            document.getElementById('pWarrantyInput').value = p.warranty || '';
-            document.getElementById('pDeliveryInput').value = p.delivery || '';
-            switchTab('admin');
-        }
-
-        function saveAdminProduct() {
-            let editIdx = parseInt(document.getElementById('editIndex').value);
-            let title = document.getElementById('pTitleInput').value;
-            let price = parseFloat(document.getElementById('pPriceInput').value);
-            let oldPrice = parseFloat(document.getElementById('pOldPriceInput').value);
-            let category = document.getElementById('pCatInput').value;
-            let badge = document.getElementById('pBadgeInput').value;
-            let rawImgs = document.getElementById('pImagesInput').value;
-            let color = document.getElementById('pColorInput').value;
-            let warranty = document.getElementById('pWarrantyInput').value;
-            let delivery = document.getElementById('pDeliveryInput').value;
-
-            if(!title || !price || !rawImgs) {
-                alert("Please fill out Title, Price and Image URLs!");
-                return;
-            }
-
-            let images = rawImgs.split(',').map(s => s.trim()).filter(s => s.length > 0);
-
-            let productObj = {
-                title, price, oldPrice, category, badge, images, color, warranty, delivery
-            };
-
-            if(editIdx === -1) {
-                products.unshift(productObj);
-            } else {
-                products[editIdx] = productObj;
-            }
-
-            saveToStorage();
-            switchTab('home');
-        }
-
-        function deleteProduct(index) {
-            if(confirm("Are you sure you want to delete this product?")) {
-                products.splice(index, 1);
-                saveToStorage();
-                renderProducts();
-            }
-        }
-
-        renderProducts();
+        renderProducts(products);
     </script>
+
 </body>
 </html>
