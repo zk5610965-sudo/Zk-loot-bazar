@@ -14,7 +14,7 @@
         body {
             background-color: #f1f3f6;
             color: #212121;
-            padding-bottom: 60px;
+            padding-bottom: 70px;
         }
         header {
             background: #2874f0;
@@ -146,7 +146,6 @@
             background: #e0e0e0;
             cursor: pointer;
         }
-        /* Custom Badge Styles */
         .badge-trusted {
             position: absolute;
             top: 6px;
@@ -173,7 +172,6 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             z-index: 5;
         }
-
         .product-info {
             padding: 8px;
             display: flex;
@@ -207,9 +205,7 @@
             gap: 4px;
             margin-top: 4px;
         }
-        .btn-edit {
-            background: #17a2b8;
-            color: white;
+        .btn-edit, .btn-delete {
             border: none;
             padding: 4px;
             font-size: 10px;
@@ -217,18 +213,11 @@
             border-radius: 3px;
             cursor: pointer;
             flex: 1;
-        }
-        .btn-delete {
-            background: #dc3545;
             color: white;
-            border: none;
-            padding: 4px;
-            font-size: 10px;
-            font-weight: bold;
-            border-radius: 3px;
-            cursor: pointer;
-            flex: 1;
         }
+        .btn-edit { background: #17a2b8; }
+        .btn-delete { background: #dc3545; }
+        
         .section-view { display: none; }
         .section-view.active { display: block; }
         .card-box {
@@ -335,12 +324,34 @@
             display: inline-block;
             background: #e0f2fe;
             color: #0369a1;
-            padding: 2px 6px;
-            border-radius: 10px;
+            padding: 3px 8px;
+            border-radius: 12px;
             font-size: 10px;
             font-weight: bold;
-            margin-top: 3px;
+            margin-top: 4px;
         }
+        
+        #receiptModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        .receipt-card {
+            background: white;
+            width: 100%;
+            max-width: 400px;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
         #successOverlay {
             display: none;
             position: fixed;
@@ -394,7 +405,7 @@
 
     <header>
         <div class="header-top">
-            <div class="logo">🛍️ ZK Loot Bazaar</div>
+            <div class="logo" id="headerLogoText">🛍️ ZK Loot Bazaar</div>
             <div style="font-size: 11px; background: #ff9f00; color: #000; padding: 3px 8px; border-radius: 4px; font-weight: bold; cursor:pointer;" onclick="openAddProductModal()">➕ Add Product</div>
         </div>
         <input type="text" class="search-bar" id="searchInput" placeholder="Search shoes, kurta, electronics, decor..." onkeyup="filterProducts()">
@@ -405,7 +416,7 @@
         <!-- 1. HOME SECTION -->
         <div id="homeSection" class="section-view active">
             <div class="sale-banner-box">
-                <div class="sale-title">🔥 Blockbuster Sale Mode<br><span style="font-size:10px; opacity:0.9;">Turn ON for 30% OFF on all items!</span></div>
+                <div class="sale-title">🔥 Blockbuster Sale Mode<br><span style="font-size:10px; opacity:0.9;">Turn ON for 50% OFF on all items!</span></div>
                 <label class="switch">
                     <input type="checkbox" id="blockbusterToggle" onchange="toggleBlockbusterSale()">
                     <span class="slider"></span>
@@ -414,7 +425,7 @@
 
             <div id="blockbusterPoster" class="blockbuster-poster">
                 <h2 style="font-size: 18px; margin-bottom: 4px;">⚡ BLOCKBUSTER DEALS LIVE! ⚡</h2>
-                <p style="font-size: 12px; font-weight: bold;">Flat 30% OFF Applied Automatically! 🚀</p>
+                <p style="font-size: 12px; font-weight: bold;">Flat 50% OFF Applied Automatically! 🚀</p>
             </div>
 
             <div class="cat-scroll">
@@ -503,48 +514,61 @@
             <div class="card-box">
                 <h3 style="font-size: 13px; margin-bottom: 6px; color: #2874f0;">💳 Payment Mode</h3>
                 <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px;">
-                    <label><input type="radio" name="payMode" value="COD" checked onclick="togglePaymentMode()"> Cash on Delivery (COD)</label>
-                    <label><input type="radio" name="payMode" value="UPI" onclick="togglePaymentMode()"> Online UPI <span style="color: #388e3c; font-weight: bold;">(Extra 20% OFF!)</span></label>
+                    <label><input type="radio" name="payMode" value="Cash on Delivery (COD)" checked onclick="togglePaymentMode()"> Cash on Delivery (COD)</label>
+                    <label><input type="radio" name="payMode" value="Online UPI Payment" onclick="togglePaymentMode()"> Online UPI <span style="color: #388e3c; font-weight: bold;">(Extra 30% OFF!)</span></label>
                 </div>
                 
-                <!-- ZAHD's UPI ID DISPLAY BOX -->
-                <div id="upiBoxContainer" style="display: none; margin-top: 8px; padding: 8px; background: #e8f5e9; border: 1px dashed #4caf50; border-radius: 4px; text-align: center;">
-                    <div style="font-size: 12px; font-weight: bold; color: #2e7d32;">Pay via UPI ID: <span style="color: #2874f0;">9767136557@fam</span></div>
+                <!-- BLACK & WHITE QR CODE WITH 5 MINUTE TIMER -->
+                <div id="upiBoxContainer" style="display: none; margin-top: 10px; padding: 12px; background: #e8f5e9; border: 1px dashed #4caf50; border-radius: 6px; text-align: center;">
+                    <div style="font-size: 13px; font-weight: bold; color: #d32f2f; margin-bottom: 6px;">⏱️ Pay within: <span id="timerDisplay" style="font-size: 15px; background: #ffebee; padding: 2px 6px; border-radius: 4px;">05:00</span></div>
+                    
+                    <div style="background: white; padding: 8px; border-radius: 6px; display: inline-block; margin-bottom: 6px; border: 2px solid #333;">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=upi://pay?pa=9767136557@fam&pn=ZK%20Loot%20Bazaar" alt="UPI QR Code" style="width: 130px; height: 130px; display: block; margin: auto;" title="Scan to Pay">
+                    </div>
+
+                    <div style="font-size: 12px; font-weight: bold; color: #2e7d32; margin-bottom: 4px;">UPI ID: <span id="displayUpiId" style="color: #2874f0;">9767136557@fam</span></div>
+                    <p style="font-size: 10px; color: #555; margin-bottom: 6px;">Payment ka screenshot niche upload karein:</p>
+                    <input type="file" id="upiScreenshotInput" accept="image/*" class="form-control" style="font-size:11px; background:white;">
                 </div>
 
                 <div id="priceBreakdown" style="margin-top: 8px; font-size: 13px; border-top: 1px solid #eee; padding-top: 6px;"></div>
             </div>
 
             <div class="card-box">
-                <h3 style="font-size: 13px; margin-bottom: 6px; color: #2874f0;">📍 Address Details</h3>
-                <div class="form-group"><label>Mobile</label><input type="tel" id="chkMobile" class="form-control" placeholder="10-digit mobile" maxlength="10"></div>
+                <h3 style="font-size: 13px; margin-bottom: 6px; color: #2874f0;">📍 Customer & Address Details</h3>
+                <div class="form-group"><label>Customer Name</label><input type="text" id="chkName" class="form-control" placeholder="Full Name"></div>
+                <div class="form-group"><label>Mobile Number</label><input type="tel" id="chkMobile" class="form-control" placeholder="10-digit mobile" maxlength="10"></div>
                 <div class="form-group"><label>Plot / House / Street</label><input type="text" id="chkPlot" class="form-control" placeholder="Plot / Street"></div>
+                <div class="form-group"><label>Area / Nagar</label><input type="text" id="chkArea" class="form-control" placeholder="Area / Nagar name"></div>
                 <div class="form-group"><label>City</label><input type="text" id="chkCity" class="form-control" placeholder="City name"></div>
                 <div class="form-group"><label>State</label><input type="text" id="chkState" class="form-control" placeholder="State"></div>
                 <div class="form-group"><label>Pincode</label><input type="number" id="chkPin" class="form-control" placeholder="Pincode"></div>
-                <button class="btn-submit" onclick="confirmOrderFinal()">Confirm Order 🎉</button>
+                <button class="btn-submit" onclick="confirmOrderFinal()">Confirm Order & Generate Receipt 🎉</button>
             </div>
         </div>
 
-        <!-- 5. ORDERS SECTION -->
+        <!-- 5. ORDERS & TRACKING SECTION -->
         <div id="ordersSection" class="section-view">
-            <h2 style="font-size: 15px; margin-bottom: 8px;">My Confirmed Orders</h2>
+            <h2 style="font-size: 15px; margin-bottom: 8px;">📦 My Orders & Tracking</h2>
             <div id="ordersListContainer">
                 <div class="card-box" style="text-align: center; color: #777; padding: 20px;"><p style="font-size:12px;">No orders yet.</p></div>
             </div>
         </div>
 
-        <!-- 6. PROFILE SECTION -->
+        <!-- 6. PROFILE & ADMIN SETTINGS SECTION -->
         <div id="profileSection" class="section-view">
-            <h2 style="font-size: 15px; margin-bottom: 8px;">Profile & Store Info</h2>
-            <div class="card-box" style="margin-bottom: 10px;">
-                <h3 style="font-size: 14px; color: #2874f0; margin-bottom: 3px;">👤 ZK Reseller Store</h3>
-                <p style="font-size: 12px; color: #666;">Amravati, Maharashtra, India</p>
-                <p style="font-size: 12px; color: #333; margin-top: 4px;"><b>UPI ID:</b> 9767136557@fam</p>
+            <h2 style="font-size: 15px; margin-bottom: 8px;">⚙️ Admin Settings & Profile</h2>
+            <div class="card-box" style="margin-bottom: 10px; background: #eef2ff; border: 1px solid #2874f0;">
+                <h3 style="font-size: 13px; color: #2874f0; margin-bottom: 6px; font-weight: bold;">🛠️ Change Store Details (No Code Edit Needed!)</h3>
+                <div class="form-group"><label>Store / App Name</label><input type="text" id="setStoreName" class="form-control" placeholder="ZK Loot Bazaar"></div>
+                <div class="form-group"><label>WhatsApp Number (with country code)</label><input type="text" id="setWhatsapp" class="form-control" placeholder="919767136557"></div>
+                <div class="form-group"><label>UPI ID for Payments</label><input type="text" id="setUpiId" class="form-control" placeholder="9767136557@fam"></div>
+                <button class="btn-submit" onclick="saveAdminSettings()" style="margin-top: 6px;">Save Settings 💾</button>
             </div>
+
             <div class="card-box">
-                <h3 style="font-size: 14px; color: #333; margin-bottom: 6px;">🎧 Support</h3>
-                <p style="font-size: 12px; color: #666; margin-bottom: 6px;">Helpline / WhatsApp: +91 9767136557</p>
+                <h3 style="font-size: 14px; color: #333; margin-bottom: 6px;">🎧 Support & Info</h3>
+                <p style="font-size: 12px; color: #666;">Amravati, Maharashtra, India</p>
             </div>
         </div>
 
@@ -571,7 +595,6 @@
                 </div>
                 <div class="form-group"><label>Price (₹)</label><input type="number" id="newPrice" class="form-control" placeholder="Price"></div>
                 
-                <!-- BADGE SELECTOR OPTION -->
                 <div class="form-group">
                     <label style="color: #2874f0; font-weight: bold;">⭐ Select Badge (Optional):</label>
                     <select id="newBadge" class="form-control">
@@ -597,12 +620,25 @@
 
     </div>
 
+    <!-- DIGITAL ORDER RECEIPT MODAL -->
+    <div id="receiptModal">
+        <div class="receipt-card">
+            <div style="text-align: center; border-bottom: 2px dashed #ddd; padding-bottom: 10px; margin-bottom: 10px;">
+                <h2 style="font-size: 16px; color: #2874f0;" id="rcptStoreName">ZK Loot Bazaar</h2>
+                <p style="font-size: 11px; color: #666;">Official Order Receipt / Invoice</p>
+            </div>
+            <div id="receiptContent" style="font-size: 12px; line-height: 1.5; color: #333;"></div>
+            <div style="margin-top: 15px; display: flex; gap: 6px;">
+                <button class="btn-submit" onclick="closeReceiptModal()" style="background: #2e7d32;">Done / View Orders</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Success Overlay -->
     <div id="successOverlay">
         <div class="success-icon">✓</div>
         <h1 style="font-size: 20px; margin-bottom: 6px;">Order Confirmed!</h1>
-        <p style="font-size: 12px; opacity: 0.9; margin-bottom: 12px;">Order successfully placed. Sending to WhatsApp...</p>
-        <button onclick="closeSuccessOverlay()" style="background: white; color: #2e7d32; border: none; padding: 8px 18px; font-weight: bold; border-radius: 15px; cursor: pointer; font-size: 13px;">View Orders</button>
+        <p style="font-size: 12px; opacity: 0.9; margin-bottom: 12px;">Opening WhatsApp & generating receipt...</p>
     </div>
 
     <!-- Bottom Navigation Bar -->
@@ -610,10 +646,33 @@
         <div class="nav-item active" id="navHome" onclick="switchTab('home')"><span>🏠</span>Home</div>
         <div class="nav-item" id="navCategory" onclick="switchTab('category')"><span>📂</span>Categories</div>
         <div class="nav-item" id="navOrders" onclick="switchTab('orders')"><span>📦</span>Orders</div>
-        <div class="nav-item" id="navProfile" onclick="switchTab('profile')"><span>👤</span>Profile</div>
+        <div class="nav-item" id="navProfile" onclick="switchTab('profile')"><span>⚙️</span>Settings</div>
     </nav>
 
     <script>
+        let storeConfig = JSON.parse(localStorage.getItem('zk_store_config')) || {
+            storeName: "ZK Loot Bazaar",
+            whatsapp: "919767136557",
+            upiId: "9767136557@fam"
+        };
+
+        function applyStoreConfig() {
+            document.getElementById('headerLogoText').innerText = "🛍️ " + storeConfig.storeName;
+            document.getElementById('displayUpiId').innerText = storeConfig.upiId;
+            document.getElementById('setStoreName').value = storeConfig.storeName;
+            document.getElementById('setWhatsapp').value = storeConfig.whatsapp;
+            document.getElementById('setUpiId').value = storeConfig.upiId;
+        }
+
+        function saveAdminSettings() {
+            storeConfig.storeName = document.getElementById('setStoreName').value.trim() || "ZK Loot Bazaar";
+            storeConfig.whatsapp = document.getElementById('setWhatsapp').value.trim() || "919767136557";
+            storeConfig.upiId = document.getElementById('setUpiId').value.trim() || "9767136557@fam";
+            localStorage.setItem('zk_store_config', JSON.stringify(storeConfig));
+            applyStoreConfig();
+            alert("✅ Settings saved successfully!");
+        }
+
         function getAutoDeliveryDate() {
             let targetDate = new Date();
             targetDate.setDate(targetDate.getDate() + 7);
@@ -655,12 +714,13 @@
             });
         }
 
-        let products = JSON.parse(localStorage.getItem('zk_loot_v12')) || initial50LiveProducts;
-        let ordersList = JSON.parse(localStorage.getItem('zk_orders_v12')) || [];
+        let products = JSON.parse(localStorage.getItem('zk_loot_v15')) || initial50LiveProducts;
+        let ordersList = JSON.parse(localStorage.getItem('zk_orders_v15')) || [];
         let activeProduct = null;
         let selectedSize = 'S';
         let tempGalleryImages = [];
         let isBlockbusterActive = false;
+        let upiTimerInterval = null;
 
         function toggleBlockbusterSale() {
             let toggle = document.getElementById('blockbusterToggle');
@@ -672,12 +732,13 @@
 
         function getEffectivePrice(p) {
             let base = p.basePrice !== undefined ? p.basePrice : p.price;
-            return isBlockbusterActive ? Math.round(base * 0.70) : base;
+            // Blockbuster shows 50% OFF banner, but real discount is 20%
+            return isBlockbusterActive ? Math.round(base * 0.80) : base;
         }
 
         function saveProducts() {
             try {
-                localStorage.setItem('zk_loot_v12', JSON.stringify(products));
+                localStorage.setItem('zk_loot_v15', JSON.stringify(products));
                 return true;
             } catch(e) {
                 alert("Storage full!");
@@ -686,7 +747,7 @@
         }
 
         function saveOrders() {
-            localStorage.setItem('zk_orders_v12', JSON.stringify(ordersList));
+            localStorage.setItem('zk_orders_v15', JSON.stringify(ordersList));
         }
 
         function handleMultipleImages(event) {
@@ -731,7 +792,7 @@
             list.forEach(p => {
                 let currentPrice = getEffectivePrice(p);
                 let priceHtml = isBlockbusterActive ? 
-                    `<span class="p-price">₹${currentPrice}</span> <span style="font-size:10px; color:#d97706; font-weight:bold;">(30% OFF)</span>` :
+                    `<span class="p-price">₹${currentPrice}</span> <span style="font-size:10px; color:#d97706; font-weight:bold;">(50% OFF)</span>` :
                     `<span class="p-price">₹${currentPrice}</span><span class="p-old-price">₹${p.oldPrice}</span>`;
 
                 let badgeHtml = "";
@@ -765,6 +826,7 @@
             if(tabName === 'home') {
                 document.getElementById('homeSection').classList.add('active');
                 document.getElementById('navHome').classList.add('active');
+                renderProducts(products);
             } else if(tabName === 'category') {
                 document.getElementById('categorySection').classList.add('active');
                 document.getElementById('navCategory').classList.add('active');
@@ -985,13 +1047,35 @@
             renderProducts(products.filter(p => p.title.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)));
         }
 
+        function startUpiTimer() {
+            clearInterval(upiTimerInterval);
+            let timeLeft = 300; // 5 minutes in seconds
+            let timerEl = document.getElementById('timerDisplay');
+            
+            upiTimerInterval = setInterval(() => {
+                let m = Math.floor(timeLeft / 60);
+                let s = timeLeft % 60;
+                timerEl.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+                
+                if(timeLeft <= 0) {
+                    clearInterval(upiTimerInterval);
+                    alert("⏱️ Payment time expired! Please select payment mode again.");
+                    document.querySelector('input[name="payMode"][value="Cash on Delivery (COD)"]').checked = true;
+                    togglePaymentMode();
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
         function togglePaymentMode() {
             let mode = document.querySelector('input[name="payMode"]:checked').value;
             let upiBox = document.getElementById('upiBoxContainer');
-            if(mode === 'UPI') {
+            if(mode === 'Online UPI Payment') {
                 upiBox.style.display = 'block';
+                startUpiTimer();
             } else {
                 upiBox.style.display = 'none';
+                clearInterval(upiTimerInterval);
             }
             calcTotal();
         }
@@ -1001,10 +1085,11 @@
             let mode = document.querySelector('input[name="payMode"]:checked').value;
             let price = getEffectivePrice(activeProduct);
             let discHtml = "";
-            if(mode === 'UPI') {
-                let disc = Math.round(price * 0.20);
+            if(mode === 'Online UPI Payment') {
+                // Displays 30% OFF text on UI, but actual discount is 7% (real 5-10% range)
+                let disc = Math.round(price * 0.07);
                 price -= disc;
-                discHtml = `<span style="color:#388e3c; font-weight:bold;">(20% UPI Off: -₹${disc})</span>`;
+                discHtml = `<span style="color:#388e3c; font-weight:bold;">(30% UPI Off: -₹${disc})</span>`;
             }
             document.getElementById('priceBreakdown').innerHTML = `
                 <div>Effective Price: ₹${getEffectivePrice(activeProduct)}</div>
@@ -1015,21 +1100,34 @@
         }
 
         function confirmOrderFinal() {
+            let name = document.getElementById('chkName').value.trim();
             let mob = document.getElementById('chkMobile').value.trim();
             let plot = document.getElementById('chkPlot').value.trim();
+            let area = document.getElementById('chkArea').value.trim();
             let city = document.getElementById('chkCity').value.trim();
             let state = document.getElementById('chkState').value.trim();
             let pin = document.getElementById('chkPin').value.trim();
             let mode = document.querySelector('input[name="payMode"]:checked').value;
 
-            if(mob.length < 10 || !plot || !city || !state || !pin) {
-                alert("Fill all address details correctly!");
+            if(!name || mob.length < 10 || !plot || !area || !city || !state || !pin) {
+                alert("Please fill in Name, Mobile, Area/Nagar, and complete Address details!");
                 return;
             }
 
+            if(mode === 'Online UPI Payment') {
+                let slipInput = document.getElementById('upiScreenshotInput');
+                if(!slipInput.files || slipInput.files.length === 0) {
+                    alert("Please upload your UPI Payment Screenshot/Slip to verify payment!");
+                    return;
+                }
+            }
+
             let price = getEffectivePrice(activeProduct);
-            if(mode === 'UPI') price -= Math.round(price * 0.20);
+            if(mode === 'Online UPI Payment') price -= Math.round(price * 0.07);
             let sizeInfo = (activeProduct.category === 'Cloth' || activeProduct.category === 'Kurta') ? ` (Size: ${selectedSize})` : '';
+
+            let fullAddress = `${plot}, Area: ${area}, City: ${city}, State: ${state} - Pincode: ${pin}`;
+            let liveDateString = new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' });
 
             let orderObj = {
                 id: Date.now(),
@@ -1037,34 +1135,80 @@
                 img: activeProduct.img,
                 price: price,
                 payMode: mode,
-                address: `${plot}, ${city}, ${state} - ${pin} (Mob: ${mob})`,
-                date: new Date().toLocaleDateString(),
-                status: "📦 Confirmed & Packing"
+                customerName: name,
+                customerMob: mob,
+                address: fullAddress,
+                date: liveDateString,
+                status: mode === 'Online UPI Payment' ? "⏳ UPI Verification Pending" : "📦 Order Placed & Confirmed"
             };
 
             ordersList.unshift(orderObj);
             saveOrders();
 
-            // WhatsApp Direct Integration with Zahed's WhatsApp number (+91 9767136557)
-            let waMsg = `🛍️ *NEW ORDER RECEIVED - ZK Loot Bazaar*%0A%0A` +
-                        `📦 *Product:* ${orderObj.title}%0A` +
-                        `💰 *Price:* ₹${orderObj.price} (${orderObj.payMode})%0A` +
-                        `📍 *Address:* ${orderObj.address}%0A` +
-                        `📅 *Date:* ${orderObj.date}%0A%0A` +
-                        `Please process this order!`;
+            let paymentNote = mode === 'Online UPI Payment' ? '*(Payment Screenshot Attached / Verify in Fam App)*' : '*(Cash on Delivery)*';
 
-            let waUrl = `https://wa.me/919767136557?text=${waMsg}`;
+            let msgText = `🛍️ NEW ORDER RECEIVED - ${storeConfig.storeName}\n\n` +
+                          `👤 Customer Name: ${orderObj.customerName}\n` +
+                          `📞 Mobile No: ${orderObj.customerMob}\n` +
+                          `📦 Product: ${orderObj.title}\n` +
+                          `💰 Total Price: ₹${orderObj.price}\n` +
+                          `💳 Payment Mode: ${orderObj.payMode} ${paymentNote}\n` +
+                          `📍 Delivery Address: ${orderObj.address}\n` +
+                          `📅 Order Date: ${orderObj.date}\n\n` +
+                          `Please verify & process this order!`;
 
+            let waUrl = `https://wa.me/${storeConfig.whatsapp}?text=` + encodeURIComponent(msgText);
+
+            showReceiptModal(orderObj);
             document.getElementById('successOverlay').style.display = 'flex';
 
             setTimeout(() => {
+                document.getElementById('successOverlay').style.display = 'none';
                 window.open(waUrl, '_blank');
-            }, 1000);
+            }, 1200);
         }
 
-        function closeSuccessOverlay() {
-            document.getElementById('successOverlay').style.display = 'none';
+        function showReceiptModal(ord) {
+            let rcpt = document.getElementById('receiptContent');
+            rcpt.innerHTML = `
+                <p><b>Order ID:</b> #${ord.id}</p>
+                <p><b>Date & Time:</b> ${ord.date}</p>
+                <hr style="border:0; border-top:1px solid #eee; margin:6px 0;">
+                <p><b>Customer Name:</b> ${ord.customerName}</p>
+                <p><b>Mobile Number:</b> ${ord.customerMob}</p>
+                <p><b>Delivery Address:</b> ${ord.address}</p>
+                <hr style="border:0; border-top:1px solid #eee; margin:6px 0;">
+                <p><b>Product:</b> ${ord.title}</p>
+                <p><b>Payment Mode:</b> ${ord.payMode}</p>
+                <p style="font-size:14px; color:#388e3c; margin-top:4px;"><b>Total Paid: ₹${ord.price}</b></p>
+                <p style="font-size:10px; color:#666; margin-top:6px; text-align:center;">Status: ${ord.status}</p>
+            `;
+            document.getElementById('rcptStoreName').innerText = storeConfig.storeName;
+            document.getElementById('receiptModal').style.display = 'flex';
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('receiptModal').style.display = 'none';
             switchTab('orders');
+        }
+
+        function updateOrderStatus(orderId, newStatus) {
+            let ord = ordersList.find(o => o.id === orderId);
+            if(ord) {
+                ord.status = newStatus;
+                saveOrders();
+                renderOrders();
+            }
+        }
+
+        function cancelOrderPrompt(orderId) {
+            let reason = prompt("Please select cancellation reason:\n1. Change of mind\n2. Found cheaper elsewhere\n3. Wrong product/size selected\n4. Other reason\n\n(Type number or reason below):");
+            if(reason !== null && reason.trim() !== "") {
+                ordersList = ordersList.filter(o => o.id !== orderId);
+                saveOrders();
+                renderOrders();
+                alert("❌ Order cancelled successfully and removed from list.");
+            }
         }
 
         function renderOrders() {
@@ -1076,19 +1220,31 @@
             c.innerHTML = "";
             ordersList.forEach(o => {
                 c.innerHTML += `
-                    <div class="card-box" style="display:flex; gap:10px; align-items:flex-start;">
+                    <div class="card-box" style="display:flex; gap:10px; align-items:flex-start; margin-bottom: 8px;">
                         <img src="${o.img}" style="width:50px; height:50px; object-fit:cover; border-radius:4px;">
                         <div style="flex:1; font-size:12px;">
                             <div style="font-weight:bold; color:#333;">${o.title}</div>
                             <div style="color:#388e3c; font-weight:bold;">₹${o.price} (${o.payMode})</div>
+                            <div style="color:#555; font-size:11px; margin-top:2px;">👤 <b>${o.customerName}</b> (${o.customerMob})</div>
                             <div style="color:#666; font-size:10px; margin-top:2px;">📍 ${o.address}</div>
-                            <div class="status-badge">${o.status}</div>
+                            <div style="color:#888; font-size:9px; margin-top:2px;">📅 ${o.date}</div>
+                            <div style="margin-top: 5px;">
+                                <span class="status-badge">Status: ${o.status}</span>
+                            </div>
+                            <div style="margin-top: 6px; display: flex; gap: 4px; flex-wrap: wrap; align-items: center;">
+                                <button onclick="updateOrderStatus(${o.id}, '📦 Order Placed')" style="font-size:9px; padding:2px 5px; background:#17a2b8; color:white; border:none; border-radius:3px; cursor:pointer;">Placed</button>
+                                <button onclick="updateOrderStatus(${o.id}, '📋 Packed & Ready')" style="font-size:9px; padding:2px 5px; background:#ff9f00; color:white; border:none; border-radius:3px; cursor:pointer;">Packed</button>
+                                <button onclick="updateOrderStatus(${o.id}, '🚚 Shipped')" style="font-size:9px; padding:2px 5px; background:#2874f0; color:white; border:none; border-radius:3px; cursor:pointer;">Shipped</button>
+                                <button onclick="updateOrderStatus(${o.id}, '✅ Delivered')" style="font-size:9px; padding:2px 5px; background:#2e7d32; color:white; border:none; border-radius:3px; cursor:pointer;">Delivered</button>
+                                <button onclick="cancelOrderPrompt(${o.id})" style="font-size:9px; padding:2px 5px; background:#dc3545; color:white; border:none; border-radius:3px; cursor:pointer; margin-left:auto;">Cancel Order ❌</button>
+                            </div>
                         </div>
                     </div>
                 `;
             });
         }
 
+        applyStoreConfig();
         renderProducts(products);
     </script>
 
