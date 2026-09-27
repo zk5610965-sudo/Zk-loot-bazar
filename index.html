@@ -503,9 +503,15 @@
             <div class="card-box">
                 <h3 style="font-size: 13px; margin-bottom: 6px; color: #2874f0;">💳 Payment Mode</h3>
                 <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px;">
-                    <label><input type="radio" name="payMode" value="COD" checked onclick="calcTotal()"> Cash on Delivery (COD)</label>
-                    <label><input type="radio" name="payMode" value="UPI" onclick="calcTotal()"> Online UPI <span style="color: #388e3c; font-weight: bold;">(Extra 20% OFF!)</span></label>
+                    <label><input type="radio" name="payMode" value="COD" checked onclick="togglePaymentMode()"> Cash on Delivery (COD)</label>
+                    <label><input type="radio" name="payMode" value="UPI" onclick="togglePaymentMode()"> Online UPI <span style="color: #388e3c; font-weight: bold;">(Extra 20% OFF!)</span></label>
                 </div>
+                
+                <!-- ZAHD's UPI ID DISPLAY BOX -->
+                <div id="upiBoxContainer" style="display: none; margin-top: 8px; padding: 8px; background: #e8f5e9; border: 1px dashed #4caf50; border-radius: 4px; text-align: center;">
+                    <div style="font-size: 12px; font-weight: bold; color: #2e7d32;">Pay via UPI ID: <span style="color: #2874f0;">9767136557@fam</span></div>
+                </div>
+
                 <div id="priceBreakdown" style="margin-top: 8px; font-size: 13px; border-top: 1px solid #eee; padding-top: 6px;"></div>
             </div>
 
@@ -530,14 +536,15 @@
 
         <!-- 6. PROFILE SECTION -->
         <div id="profileSection" class="section-view">
-            <h2 style="font-size: 15px; margin-bottom: 8px;">Profile</h2>
+            <h2 style="font-size: 15px; margin-bottom: 8px;">Profile & Store Info</h2>
             <div class="card-box" style="margin-bottom: 10px;">
                 <h3 style="font-size: 14px; color: #2874f0; margin-bottom: 3px;">👤 ZK Reseller Store</h3>
                 <p style="font-size: 12px; color: #666;">Amravati, Maharashtra, India</p>
+                <p style="font-size: 12px; color: #333; margin-top: 4px;"><b>UPI ID:</b> 9767136557@fam</p>
             </div>
             <div class="card-box">
                 <h3 style="font-size: 14px; color: #333; margin-bottom: 6px;">🎧 Support</h3>
-                <p style="font-size: 12px; color: #666; margin-bottom: 6px;">Helpline: +91 9876543210</p>
+                <p style="font-size: 12px; color: #666; margin-bottom: 6px;">Helpline / WhatsApp: +91 9767136557</p>
             </div>
         </div>
 
@@ -594,7 +601,7 @@
     <div id="successOverlay">
         <div class="success-icon">✓</div>
         <h1 style="font-size: 20px; margin-bottom: 6px;">Order Confirmed!</h1>
-        <p style="font-size: 12px; opacity: 0.9; margin-bottom: 12px;">Order successfully placed.</p>
+        <p style="font-size: 12px; opacity: 0.9; margin-bottom: 12px;">Order successfully placed. Sending to WhatsApp...</p>
         <button onclick="closeSuccessOverlay()" style="background: white; color: #2e7d32; border: none; padding: 8px 18px; font-weight: bold; border-radius: 15px; cursor: pointer; font-size: 13px;">View Orders</button>
     </div>
 
@@ -959,7 +966,7 @@
                     <div style="font-size: 14px; font-weight: bold; color: #388e3c; margin-top: 2px;">₹${currentDetailPrice}</div>
                 </div>
             `;
-            calcTotal();
+            togglePaymentMode();
             document.querySelectorAll('.section-view').forEach(sec => sec.classList.remove('active'));
             document.getElementById('checkoutSection').classList.add('active');
         }
@@ -976,6 +983,17 @@
         function filterProducts() {
             let q = document.getElementById('searchInput').value.toLowerCase();
             renderProducts(products.filter(p => p.title.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)));
+        }
+
+        function togglePaymentMode() {
+            let mode = document.querySelector('input[name="payMode"]:checked').value;
+            let upiBox = document.getElementById('upiBoxContainer');
+            if(mode === 'UPI') {
+                upiBox.style.display = 'block';
+            } else {
+                upiBox.style.display = 'none';
+            }
+            calcTotal();
         }
 
         function calcTotal() {
@@ -1013,7 +1031,7 @@
             if(mode === 'UPI') price -= Math.round(price * 0.20);
             let sizeInfo = (activeProduct.category === 'Cloth' || activeProduct.category === 'Kurta') ? ` (Size: ${selectedSize})` : '';
 
-            ordersList.unshift({
+            let orderObj = {
                 id: Date.now(),
                 title: activeProduct.title + sizeInfo,
                 img: activeProduct.img,
@@ -1022,9 +1040,26 @@
                 address: `${plot}, ${city}, ${state} - ${pin} (Mob: ${mob})`,
                 date: new Date().toLocaleDateString(),
                 status: "📦 Confirmed & Packing"
-            });
+            };
+
+            ordersList.unshift(orderObj);
             saveOrders();
+
+            // WhatsApp Direct Integration with Zahed's WhatsApp number (+91 9767136557)
+            let waMsg = `🛍️ *NEW ORDER RECEIVED - ZK Loot Bazaar*%0A%0A` +
+                        `📦 *Product:* ${orderObj.title}%0A` +
+                        `💰 *Price:* ₹${orderObj.price} (${orderObj.payMode})%0A` +
+                        `📍 *Address:* ${orderObj.address}%0A` +
+                        `📅 *Date:* ${orderObj.date}%0A%0A` +
+                        `Please process this order!`;
+
+            let waUrl = `https://wa.me/919767136557?text=${waMsg}`;
+
             document.getElementById('successOverlay').style.display = 'flex';
+
+            setTimeout(() => {
+                window.open(waUrl, '_blank');
+            }, 1000);
         }
 
         function closeSuccessOverlay() {
