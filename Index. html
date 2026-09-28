@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fastest Recharge & Loot</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #f3f0f7;
+            color: #212121;
+            padding-bottom: 70px;
+        }
+        header {
+            background: #512da8;
+            color: white;
+            padding: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 18px;
+            font-weight: bold;
+            font-style: italic;
+        }
+        .container {
+            padding: 10px;
+            max-width: 500px;
+            margin: auto;
+        }
+        .card-box {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 10px;
+        }
+        .form-group { margin-bottom: 8px; }
+        .form-group label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #444;
+            display: block;
+            margin-bottom: 3px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 13px;
+            outline: none;
+        }
+        .btn-main {
+            background: #512da8;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(81,45,168,0.3);
+        }
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .service-card {
+            background: #faf8ff;
+            border: 1px solid #d1c4e9;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: #4a148c;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: 0.2s;
+        }
+        .service-card:hover { background: #f0e6fc; }
+        .service-card span { font-size: 24px; display: block; margin-bottom: 4px; }
+        
+        .ad-slider-box {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .purple-promo-banner {
+            background: #512da8;
+            color: white;
+            border-radius: 8px;
+            padding: 14px;
+            margin-top: 10px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+
+        .filter-scroll {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding: 4px 0 8px 0;
+            scrollbar-width: none;
+        }
+        .filter-scroll::-webkit-scrollbar { display: none; }
+        .filter-chip {
+            background: #ede7f6;
+            color: #512da8;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 11px;
+            font-weight: bold;
+            white-space: nowrap;
+            cursor: pointer;
+            border: 1px solid #d1c4e9;
+        }
+        .filter-chip.active {
+            background: #512da8;
+            color: white;
+        }
+
+        .plan-list-item {
+            background: #faf8ff;
+            border: 1px solid #d1c4e9;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        .plan-list-item:hover { background: #f0e6fc; }
+
+        .cable-provider-card {
+            background: #faf8ff;
+            border: 1px solid #d1c4e9;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        .cable-provider-card:hover { background: #f0e6fc; }
+
+        .section-view { display: none; }
+        .section-view.active { display: block; }
+
+        nav {
+            position: fixed;
+            bottom: 0; left: 0;
+            width: 100%;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 6px 0;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        .nav-item {
+            text-align: center;
+            font-size: 10px;
+            color: #666;
+            cursor: pointer;
+            flex: 1;
+        }
+        .nav-item.active {
+            color: #512da8;
+            font-weight: bold;
+        }
+        .nav-item span { font-size: 16px; display: block; }
+        
+        #qrModal, #cableOrderModal, #cablePaymentModal, #redeemModal, #redeemPaymentModal, #rechargeModal, #loginOverlay, #bonusPopupModal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+        .qr-card {
+            background: white;
+            width: 100%;
+            max-width: 380px;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        #successOverlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #2e7d32;
+            z-index: 4000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN PAGE OVERLAY -->
+    <div id="loginOverlay" style="display: flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #512da8; z-index: 6000; justify-content: center; align-items: center; padding: 15px;">
+        <div class="qr-card">
+            <h2 style="font-size: 18px; color: #512da8; margin-bottom: 4px;">⚡ Fastest Recharge Login</h2>
+            <p style="font-size: 11px; color: #666; margin-bottom: 12px;">Enter your credentials to access app</p>
+            
+            <div class="form-group"><label>Email ID</label><input type="email" id="loginEmail" class="form-control" placeholder="example@gmail.com"></div>
+            <div class="form-group"><label>Password</label><input type="password" id="loginPassword" class="form-control" placeholder="••••••••"></div>
+
+            <div style="background: #f3f0f7; padding: 10px; border-radius: 6px; margin: 10px 0; text-align: left;">
+                <label style="font-size: 12px; font-weight: bold; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                    <input type="checkbox" id="emailVerifyCheck" style="width: 18px; height: 18px; accent-color: #2196f3;"> Email Checking & Human Verification
+                </label>
+            </div>
+
+            <button class="btn-main" onclick="submitAppLogin()" style="background: #2e7d32; margin-top: 6px;">Login & Continue 🔓</button>
+        </div>
+    </div>
+
+    <!-- YOU GOT 25 RS BONUS POPUP MODAL -->
+    <div id="bonusPopupModal">
+        <div class="qr-card">
+            <div style="font-size: 50px; margin-bottom: 10px;">🎁🎉</div>
+            <h2 style="font-size: 18px; color: #2e7d32; margin-bottom: 6px;">You Got ₹25 Bonus!</h2>
+            <p style="font-size: 12px; color: #555; margin-bottom: 12px;">You joined via a referral link. Enter your UPI & Mobile number to claim ₹25 directly!</p>
+            
+            <div class="form-group"><label>Enter Your UPI ID</label><input type="text" id="bonusUpi" class="form-control" placeholder="username@upi"></div>
+            <div class="form-group"><label>Enter Your Mobile Number</label><input type="tel" id="bonusPhone" class="form-control" placeholder="10-digit mobile" maxlength="10"></div>
+
+            <button class="btn-main" onclick="submitBonusClaim()" style="background: #2e7d32; margin-top: 8px;">Confirm & Claim ₹25 🚀</button>
+        </div>
+    </div>
+
+    <header>
+        <div class="header-top">
+            <div class="logo">⚡ Fastest Recharge</div>
+            <div style="font-size: 11px; background: #ffb300; color: #000; padding: 3px 8px; border-radius: 4px; font-weight: bold; cursor:pointer;" onclick="switchTab('profile')">Admin ⚙️</div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- 1. HOME / RECHARGE SECTION -->
+        <div id="homeSection" class="section-view active">
+            <div class="card-box" style="background: linear-gradient(135deg, #512da8, #7e57c2); color: white;">
+                <h2 style="font-size: 15px; margin-bottom: 4px;">📱 Fastest Recharge & Loot Hub</h2>
+                <p style="font-size: 11px; opacity: 0.9;">Instant Mobile, DTH, Redeem Code & Cable TV!</p>
+            </div>
+
+            <!-- Only 4 Main Active Services Grid -->
+            <div class="card-box">
+                <h3 style="font-size: 12px; color: #512da8; margin-bottom: 6px; font-weight: bold;">⚡ Select Service</h3>
+                <div class="services-grid">
+                    <div class="service-card" onclick="openRechargeModal()">
+                        <span>📱</span>Mobile Recharge
+                    </div>
+                    <div class="service-card" onclick="alert('DTH TV Recharge service selected')">
+                        <span>📡</span>DTH / TV
+                    </div>
+                    <div class="service-card" onclick="openRedeemModal()">
+                        <span>🎮</span>Redeem Code
+                    </div>
+                    <div class="service-card" onclick="openCableSection()">
+                        <span>📺</span>Cable TV
+                    </div>
+                </div>
+            </div>
+
+            <!-- Auto-Sliding Promotional Banner -->
+            <div class="ad-slider-box" id="adBannerBox">
+                <h3 style="font-size: 13px; font-weight: bold; margin-bottom: 2px;" id="adTitle">🔥 Flat 20% Cashback on First Recharge!</h3>
+                <p style="font-size: 10px; opacity: 0.9;" id="adDesc">Use UPI/Fam app to get instant credit.</p>
+            </div>
+
+            <!-- Purple Background Banner -->
+            <div class="purple-promo-banner">
+                <h3 style="font-size: 14px; font-weight: bold; margin-bottom: 3px;">Low Price Recharge Enjoy App</h3>
+                <p style="font-size: 11px; opacity: 0.9;">Experience the fastest and cheapest recharges online!</p>
+            </div>
+        </div>
+
+        <!-- 2. HISTORY SECTION -->
+        <div id="historySection" class="section-view">
+            <h2 style="font-size: 15px; margin-bottom: 8px;">📋 Recharge & Order History</h2>
+            <div id="historyListContainer">
+                <div class="card-box" style="text-align: center; color: #777; padding: 20px;"><p style="font-size:12px;">No history yet.</p></div>
+            </div>
+        </div>
+
+        <!-- 3. VOUCHERS SECTION -->
+        <div id="vouchersSection" class="section-view">
+            <h2 style="font-size: 15px; margin-bottom: 8px;">🛍️ Discount Vouchers & Gift Cards</h2>
+            <p style="font-size: 11px; color: #555; margin-bottom: 8px;">Buy vouchers above ₹100 & get extra cashback!</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div class="card-box" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div><b>📦 Flipkart Gift Voucher</b><br><span style="font-size:11px; color:#388e3c;">Min purchase ₹100 | Get 10% Off</span></div>
+                    <button class="btn-main" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="buyVoucher('Flipkart', 100)">Buy ₹100</button>
+                </div>
+                <div class="card-box" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div><b>🛒 Amazon Pay Voucher</b><br><span style="font-size:11px; color:#388e3c;">Min purchase ₹150 | Get Instant Code</span></div>
+                    <button class="btn-main" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="buyVoucher('Amazon', 150)">Buy ₹150</button>
+                </div>
+                <div class="card-box" style="display:flex; justify-content:space-between; align-items:center;">
+                    <div><b>👗 Myntra Fashion Voucher</b><br><span style="font-size:11px; color:#388e3c;">Min purchase ₹200 | Save Big</span></div>
+                    <button class="btn-main" style="width: auto; padding: 6px 12px; font-size: 12px;" onclick="buyVoucher('Myntra', 200)">Buy ₹200</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. PROFILE & ADMIN SECTION -->
+        <div id="profileSection" class="section-view">
+            <h2 style="font-size: 15px; margin-bottom: 8px;">👤 Profile & Refer & Earn</h2>
+            
+            <div class="card-box" style="background: #f3e5f5; border: 1px solid #ce93d8; text-align: center;">
+                <h3 style="font-size: 14px; color: #6a1b9a; margin-bottom: 4px;">🎁 Refer & Earn ₹25 per Share!</h3>
+                <p style="font-size: 11px; color: #555; margin-bottom: 8px;">Share this app link with friends on WhatsApp. When they join & recharge, you get ₹25 directly in your UPI!</p>
+                <button class="btn-main" style="background: #25d366;" onclick="shareOnWhatsapp()">Share on WhatsApp 🟢</button>
+            </div>
+
+            <div class="card-box" id="adminBoxContainer" style="margin-top: 10px;">
+                <h3 style="font-size: 13px; color: #512da8; margin-bottom: 6px; font-weight: bold;">🔐 Admin Panel (Manage Prices & Plans)</h3>
+                <div class="form-group"><label>Admin Password</label><input type="password" id="adminPassInput" class="form-control" placeholder="zkadmin123"></div>
+                <button class="btn-main" onclick="verifyAdmin()" style="margin-top: 4px;">Open Admin Controls</button>
+
+                <div id="adminControlsArea" style="display: none; margin-top: 10px; border-top: 1px solid #eee; padding-top: 8px;">
+                    <h4 style="font-size: 12px; color: #333; margin-bottom: 6px;">Set Cable TV Prices (Admin):</h4>
+                    <div class="form-group"><label>JioFiber TV (₹)</label><input type="number" id="priceCableJio" class="form-control" value="600"></div>
+                    <div class="form-group"><label>Airtel Digital TV (₹)</label><input type="number" id="priceCableAirtel" class="form-control" value="650"></div>
+                    <div class="form-group"><label>Tata Play HD (₹)</label><input type="number" id="priceCableTata" class="form-control" value="700"></div>
+                    <div class="form-group"><label>Sun Direct (₹)</label><input type="number" id="priceCableSun" class="form-control" value="500"></div>
+                    <div class="form-group"><label>D2H / Dish TV (₹)</label><input type="number" id="priceCableDish" class="form-control" value="550"></div>
+                    <button class="btn-main" onclick="saveCablePrices()" style="margin-bottom: 10px;">Save Cable Prices 💾</button>
+
+                    <h4 style="font-size: 12px; color: #333; margin-bottom: 6px;">Add New Recharge Plan:</h4>
+                    <div class="form-group"><label>Operator</label>
+                        <select id="newPlanOp" class="form-control">
+                            <option value="Jio">Jio</option>
+                            <option value="Airtel">Airtel</option>
+                            <option value="Vi">Vi</option>
+                            <option value="BSNL">BSNL</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Plan Name</label><input type="text" id="newPlanName" class="form-control" placeholder="e.g. 1.5GB/Day (28 Days)"></div>
+                    <div class="form-group"><label>Category</label>
+                        <select id="newPlanCategory" class="form-control">
+                            <option value="Unlimited">Unlimited</option>
+                            <option value="Basic">Basic</option>
+                            <option value="Data">Data</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label>Calls / SMS Details</label><input type="text" id="newPlanDetails" class="form-control" placeholder="e.g. Unlimited Calls | 100 SMS/Day"></div>
+                    <div class="form-group"><label>Price (₹)</label><input type="number" id="newPlanPrice" class="form-control" placeholder="Amount"></div>
+                    <button class="btn-main" onclick="addNewPlan()">Add Plan ➕</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MOBILE RECHARGE POPUP MODAL -->
+    <div id="rechargeModal">
+        <div class="qr-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="font-size: 14px; color: #512da8; font-weight: bold;">📱 Mobile Recharge Plans</h3>
+                <button onclick="document.getElementById('rechargeModal').style.display='none'" style="background:none; border:none; color:red; font-weight:bold; cursor:pointer; font-size:14px;">✕</button>
+            </div>
+            <div class="form-group"><label>Mobile Number</label><input type="tel" id="rechargeMob" class="form-control" placeholder="Enter 10-digit mobile" maxlength="10"></div>
+            <div class="form-group">
+                <label>Operator / Sim Provider</label>
+                <select id="operatorSelect" class="form-control" onchange="renderPlans()">
+                    <option value="Jio">🔴 MyJio - Jio Prepaid[span_0](start_span)[span_0](end_span)</option>
+                    <option value="Airtel">🔴 Airtel - Airtel Prepaid[span_1](start_span)[span_1](end_span)</option>
+                    <option value="Vi">🔴 Vi - Vi App Prepaid[span_2](start_span)[span_2](end_span)</option>
+                    <option value="BSNL">🔵 BSNL - BSNL Prepaid</option>
+                </select>
+            </div>
+
+            <!-- Slide Filter Bar -->
+            <div class="filter-scroll" style="margin-top: 10px;">
+                <div class="filter-chip active" onclick="filterPlans('All', this)">All Plans</div>
+                <div class="filter-chip" onclick="filterPlans('Unlimited', this)">🔥 Unlimited</div>
+                <div class="filter-chip" onclick="filterPlans('Basic', this)">⚡ Basic</div>
+                <div class="filter-chip" onclick="filterPlans('Data', this)">📊 Data Add-on</div>
+            </div>
+
+            <div id="plansContainer" style="margin-top: 8px; text-align: left;"></div>
+        </div>
+    </div>
+
+    <!-- PLAY STORE REDEEM CODE MODAL -->
+    <div id="redeemModal">
+        <div class="qr-card">
+            <h3 style="font-size: 15px; color: #512da8; margin-bottom: 8px;">🎮 Play Store Redeem Code</h3>
+            <div class="form-group"><label>Enter Redeem Amount (Min ₹10)</label><input type="number" id="redeemAmount" class="form-control" placeholder="e.g. 20 (Total ₹25)" min="10" oninput="calcRedeemTotal()"></div>
+            <div style="font-size: 12px; color: #388e3c; font-weight: bold; margin-bottom: 8px;" id="redeemTotalDisplay">Total Payable: ₹0 (Min ₹10)</div>
+            <div class="form-group"><label>Mobile Number (To send code)</label><input type="tel" id="redeemContact" class="form-control" placeholder="10-digit mobile" maxlength="10"></div>
+            
+            <button class="btn-main" onclick="submitRedeemOrder()" style="background: #2e7d32; margin-top: 6px;">Proceed to Payment 🚀</button>
+            <button class="btn-main" onclick="document.getElementById('redeemModal').style.display='none'" style="background: #dc3545; margin-top: 4px;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- REDEEM PAYMENT MODAL (ONLINE UPI) -->
+    <div id="redeemPaymentModal">
+        <div class="qr-card">
+            <h3 style="font-size: 15px; color: #512da8; margin-bottom: 6px;">💳 Online Payment for Redeem Code</h3>
+            <div id="redeemPayAmountInfo" style="font-size: 13px; font-weight: bold; color: #388e3c; margin-bottom: 10px;"></div>
+            
+            <div style="background: #e8f5e9; border: 1px dashed #4caf50; padding: 10px; border-radius: 6px; margin-bottom: 10px; text-align: center;">
+                <div style="font-size: 12px; font-weight: bold; color: #d32f2f; margin-bottom: 4px;">⏱️ Pay within: <span id="redeemTimerDisplay">03:00</span></div>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=upi://pay?pa=9767136557@fam&pn=Fastest%20Recharge" alt="QR" style="width: 120px; height: 120px; display: block; margin: auto; border: 2px solid #333; border-radius: 4px; margin-bottom: 6px;">
+                <div style="font-size: 11px; font-weight: bold; color: #2e7d32;">UPI ID: 9767136557@fam</div>
+            </div>
+
+            <button class="btn-main" onclick="proceedToRedeemVerification()" style="background: #2e7d32; margin-bottom: 6px;">I Have Paid / Confirm ✅</button>
+            <button class="btn-main" onclick="document.getElementById('redeemPaymentModal').style.display='none';" style="background: #dc3545;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- CABLE CONNECTION ORDER MODAL -->
+    <div id="cableOrderModal">
+        <div class="qr-card">
+            <h3 style="font-size: 15px; color: #512da8; margin-bottom: 8px;" id="cableModalTitle">📺 Cable TV Booking</h3>
+            <div style="font-size: 13px; color: #388e3c; font-weight: bold; margin-bottom: 8px;" id="cablePriceDisplay">Connection Price: ₹600</div>
+
+            <div class="form-group"><label>Set-Top Box (STB) / Smart Card Number</label><input type="text" id="cableStbNo" class="form-control" placeholder="Enter STB / Card No"></div>
+            <div class="form-group"><label>Full Name</label><input type="text" id="cableName" class="form-control" placeholder="Customer Full Name"></div>
+            <div class="form-group"><label>UPI ID</label><input type="text" id="cableUpi" class="form-control" placeholder="username@upi"></div>
+            <div class="form-group"><label>Mobile Number</label><input type="tel" id="cableContact" class="form-control" placeholder="10-digit mobile" maxlength="10"></div>
+            <div class="form-group"><label>Installation Address</label><input type="text" id="cableAddress" class="form-control" placeholder="House / Street / City / Pincode"></div>
+
+            <button class="btn-main" onclick="submitCableOrder()" style="background: #2e7d32; margin-top: 6px;">Proceed to Payment 🚀</button>
+            <button class="btn-main" onclick="document.getElementById('cableOrderModal').style.display='none'" style="background: #dc3545; margin-top: 4px;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- CABLE PAYMENT MODE MODAL -->
+    <div id="cablePaymentModal">
+        <div class="qr-card">
+            <h3 style="font-size: 15px; color: #512da8; margin-bottom: 6px;">💳 Select Payment Mode for Cable</h3>
+            <div id="cablePayAmountInfo" style="font-size: 13px; font-weight: bold; color: #388e3c; margin-bottom: 10px;"></div>
+            
+            <div style="display: flex; flex-direction: column; gap: 8px; text-align: left; font-size: 13px; margin-bottom: 15px;">
+                <label><input type="radio" name="cablePayMode" value="Online" checked onclick="toggleCablePaymentMode()"> Online UPI Payment <span style="color:#2e7d32; font-weight:bold;">(Instant Verification)</span></label>
+                <label><input type="radio" name="cablePayMode" value="COD" onclick="toggleCablePaymentMode()"> Cash on Delivery (COD)</label>
+            </div>
+
+            <div id="cableUpiBox" style="background: #e8f5e9; border: 1px dashed #4caf50; padding: 10px; border-radius: 6px; margin-bottom: 10px; text-align: center;">
+                <div style="font-size: 12px; font-weight: bold; color: #d32f2f; margin-bottom: 4px;">⏱️ Pay within: <span id="cableTimerDisplay">03:00</span></div>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=130x130&data=upi://pay?pa=9767136557@fam&pn=Fastest%20Recharge" alt="QR" style="width: 120px; height: 120px; display: block; margin: auto; border: 2px solid #333; border-radius: 4px; margin-bottom: 6px;">
+                <div style="font-size: 11px; font-weight: bold; color: #2e7d32;">UPI ID: 9767136557@fam</div>
+            </div>
+
+            <button class="btn-main" onclick="proceedToCableVerification()" style="background: #2e7d32; margin-bottom: 6px;">I Have Paid / Confirm Order ✅</button>
+            <button class="btn-main" onclick="document.getElementById('cablePaymentModal').style.display='none';" style="background: #dc3545;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- CABLE TV PROVIDERS LIST MODAL -->
+    <div id="cableSectionContainer" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:3000; justify-content:center; align-items:center; padding:15px;">
+        <div class="qr-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <h3 style="font-size: 14px; color: #512da8; font-weight: bold;">📺 Select TV Cable / DTH Connection</h3>
+                <button onclick="document.getElementById('cableSectionContainer').style.display='none'" style="background:none; border:none; color:red; font-weight:bold; cursor:pointer; font-size:14px;">✕</button>
+            </div>
+            <div id="cableProvidersList" style="text-align: left;"></div>
+        </div>
+    </div>
+
+    <!-- QR PAYMENT MODAL FOR RECHARGE -->
+    <div id="qrModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:3000; justify-content:center; align-items:center; padding:15px;">
+        <div class="qr-card">
+            <h3 style="font-size: 15px; color: #512da8; margin-bottom: 4px;">Scan & Pay via UPI / Fam</h3>
+            <div style="font-size: 13px; font-weight: bold; color: #d32f2f; margin-bottom: 6px;">⏱️ Time Left: <span id="timerDisplay" style="background: #ffebee; padding: 2px 6px; border-radius: 4px;">04:00</span></div>
+            
+            <div style="background: white; padding: 8px; border-radius: 6px; display: inline-block; margin-bottom: 6px; border: 2px solid #333;">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=upi://pay?pa=9767136557@fam&pn=Fastest%20Recharge" alt="QR" style="width: 130px; height: 130px; display: block; margin: auto;">
+            </div>
+            
+            <div style="font-size: 12px; font-weight: bold; color: #2e7d32; margin-bottom: 4px;">UPI ID: <span style="color: #512da8;">9767136557@fam</span></div>
+            <div id="qrItemInfo" style="font-size: 12px; color: #555; margin-bottom: 10px; font-weight: bold;"></div>
+            
+            <button class="btn-main" onclick="confirmPaymentAndSendWhatsApp()" style="background: #2e7d32; margin-bottom: 6px;">I Have Paid ✅</button>
+            <button class="btn-main" onclick="document.getElementById('qrModal').style.display='none'; clearInterval(timerInterval);" style="background: #dc3545;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- LOADING & VERIFICATION OVERLAY -->
+    <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:5000; flex-direction:column; align-items:center; justify-content:center; color:white; text-align:center; padding:15px;">
+        <div class="spinner"></div>
+        <h2 id="loadingText" style="font-size: 18px; margin-bottom: 8px; color: #4caf50;">Verifying Payment & Availability...</h2>
+        <p style="font-size: 12px; opacity: 0.9; margin-bottom: 15px;" id="loadingSubText">Please wait while we check records...</p>
+        
+        <div id="captchaBox" style="display: none; background: white; color: black; padding: 12px; border-radius: 6px; width: 280px;">
+            <label style="font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                <input type="checkbox" id="robotCheck" style="width: 18px; height: 18px;" onchange="completeVerificationFinal()"> I am not a robot (Verify)
+            </label>
+        </div>
+    </div>
+
+    <!-- SUCCESS OVERLAY -->
+    <div id="successOverlay">
+        <div style="font-size: 60px; margin-bottom: 15px;">🎵🎉</div>
+        <h1 style="font-size: 22px; margin-bottom: 6px;">Your Code / Order is Ready!</h1>
+        <p style="font-size: 12px; opacity: 0.9;">Opening WhatsApp & updating history...</p>
+    </div>
+
+    <!-- EDIT PLAN MODAL -->
+    <div id="editPlanModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 3000; justify-content: center; align-items: center; padding: 15px;">
+        <div class="qr-card">
+            <h3 style="font-size: 15px; color: #512da8; margin-bottom: 8px;">✏️ Edit Recharge Plan</h3>
+            <input type="hidden" id="editPlanId">
+            <div class="form-group"><label>Operator</label>
+                <select id="editPlanOp" class="form-control">
+                    <option value="Jio">Jio</option>
+                    <option value="Airtel">Airtel</option>
+                    <option value="Vi">Vi</option>
+                    <option value="BSNL">BSNL</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Plan Name</label><input type="text" id="editPlanName" class="form-control"></div>
+            <div class="form-group"><label>Category</label>
+                <select id="editPlanCategory" class="form-control">
+                    <option value="Unlimited">Unlimited</option>
+                    <option value="Basic">Basic</option>
+                    <option value="Data">Data</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Calls / SMS Details</label><input type="text" id="editPlanDetails" class="form-control"></div>
+            <div class="form-group"><label>Price (₹)</label><input type="number" id="editPlanPrice" class="form-control"></div>
+            <button class="btn-main" onclick="updatePlanData()" style="background: #2e7d32; margin-top: 6px;">Update Plan</button>
+            <button class="btn-main" onclick="document.getElementById('editPlanModal').style.display='none'" style="background: #dc3545; margin-top: 4px;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation Bar -->
+    <nav>
+        <div class="nav-item active" id="navHome" onclick="switchTab('home')"><span>📱</span>Recharge</div>
+        <div class="nav-item" id="navHistory" onclick="switchTab('history')"><span>📋</span>History</div>
+        <div class="nav-item" id="navVouchers" onclick="switchTab('vouchers')"><span>🎁</span>Vouchers</div>
+        <div class="nav-item" id="navProfile" onclick="switchTab('profile')"><span>👤</span>Profile</div>
+    </nav>
+
+    <script>
+        // Check if user came via referral link
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            if(urlParams.has('ref')) {
+                // Show bonus popup for new referral user
+                setTimeout(() => {
+                    document.getElementById('bonusPopupModal').style.display = 'flex';
+                }, 1000);
+            }
+        });
+
+        function submitBonusClaim() {
+            let upi = document.getElementById('bonusUpi').value.trim();
+            let phone = document.getElementById('bonusPhone').value.trim();
+            if(!upi || phone.length < 10) {
+                alert("Please enter a valid UPI ID and 10-digit mobile number!");
+                return;
+            }
+
+            let adminWhatsApp = "919767136557";
+            let msg = `🎁 NEW REFERRAL BONUS CLAIM!\n\n` +
+                      `👤 Client / User claimed ₹25 referral bonus.\n` +
+                      `💳 UPI ID: ${upi}\n` +
+                      `📞 Mobile Number: ${phone}\n\n` +
+                      `Please send ₹25 to this UPI/Number!`;
+
+            let waUrl = `https://wa.me/${adminWhatsApp}?text=` + encodeURIComponent(msg);
+            document.getElementById('bonusPopupModal').style.display = 'none';
+            alert("✅ Claim submitted successfully! Opening WhatsApp to notify admin...");
+            window.open(waUrl, '_blank');
+        }
+
+        let cablePrices = JSON.parse(localStorage.getItem('zk_cable_prices_v5')) || { "JioFiber TV": 600, "Airtel Digital TV": 650, "Tata Play HD": 700, "Sun Direct": 500, "D2H / Dish TV": 550 };
+
+        let cableProviders = [
+            {name: "JioFiber TV", desc: "4K HD Set-Top Box + 550+ Channels"},
+            {name: "Airtel Digital TV", desc: "Xstream Box + OTT Apps Included"},
+            {name: "Tata Play HD", desc: "Binge+ Smart STB Connection"},
+            {name: "Sun Direct", desc: "Digital Clear Picture Quality"},
+            {name: "D2H / Dish TV", desc: "All Sports & Movies Packs"}
+        ];
+
+        let plansList = JSON.parse(localStorage.getItem('zk_plans_v15')) || [
+            {id: 1, operator: "Jio", name: "1.5GB/Day (28 Days)", category: "Unlimited", details: "Unlimited Calls | 100 SMS/Day", price: 239},
+            {id: 2, operator: "Jio", name: "2GB/Day (28 Days)", category: "Unlimited", details: "Unlimited Calls | 100 SMS/Day", price: 299},
+            {id: 3, operator: "Airtel", name: "1.5GB/Day (28 Days)", category: "Unlimited", details: "Unlimited Calls | 100 SMS/Day", price: 265},
+            {id: 4, operator: "Vi", name: "1.5GB/Day (28 Days)", category: "Unlimited", details: "Unlimited Calls | 100 SMS/Day", price: 269},
+            {id: 5, operator: "BSNL", name: "2GB/Day (30 Days)", category: "Unlimited", details: "Unlimited Calls | 100 SMS/Day", price: 199}
+        ];
+
+        let historyList = JSON.parse(localStorage.getItem('zk_history_v15')) || [];
+        let currentCheckoutItem = null;
+        let timerInterval = null;
+        let redeemTimerInterval = null;
+        let cableTimerInterval = null;
+        let isAdminLoggedIn = false;
+        let activeCategoryFilter = 'All';
+        let tempCableOrderData = null;
+        let tempRedeemOrderData = null;
+        let verificationTargetType = "";
+
+        let adBanners = [
+            {title: "🔥 Flat 20% Cashback on First Recharge!", desc: "Use UPI/Fam app to get instant credit."},
+            {title: "🎮 Play Store Redeem Code Instant Delivery!", desc: "100% Secure & Fast Code Generation."},
+            {title: "📺 New Cable TV & DTH Connection at ₹500 Only!", desc: "Free Installation & HD Picture Quality."}
+        ];
+        let currentAdIndex = 0;
+
+        setInterval(() => {
+            currentAdIndex = (currentAdIndex + 1) % adBanners.length;
+            let banner = adBanners[currentAdIndex];
+            document.getElementById('adTitle').innerText = banner.title;
+            document.getElementById('adDesc').innerText = banner.desc;
+        }, 3500);
+
+        function submitAppLogin() {
+            let email = document.getElementById('loginEmail').value.trim();
+            let pass = document.getElementById('loginPassword').value.trim();
+            let verified = document.getElementById('emailVerifyCheck').checked;
+
+            if(!email || !pass) {
+                alert("Please enter Email ID and Password!");
+                return;
+            }
+            if(!verified) {
+                alert("Please complete the Email Checking & Human Verification tick!");
+                return;
+            }
+
+            document.getElementById('loginOverlay').style.display = 'none';
+            alert("✅ Login Successful! Welcome to Fastest Recharge.");
+        }
+
+        function saveCablePrices() {
+            cablePrices["JioFiber TV"] = Number(document.getElementById('priceCableJio').value) || 600;
+            cablePrices["Airtel Digital TV"] = Number(document.getElementById('priceCableAirtel').value) || 650;
+            cablePrices["Tata Play HD"] = Number(document.getElementById('priceCableTata').value) || 700;
+            cablePrices["Sun Direct"] = Number(document.getElementById('priceCableSun').value) || 500;
+            cablePrices["D2H / Dish TV"] = Number(document.getElementById('priceCableDish').value) || 550;
+            localStorage.setItem('zk_cable_prices_v5', JSON.stringify(cablePrices));
+            alert("✅ Cable TV Prices saved successfully!");
+        }
+
+        function openRechargeModal() {
+            document.getElementById('rechargeModal').style.display = 'flex';
+            renderPlans();
+        }
+
+        function openRedeemModal() {
+            document.getElementById('redeemAmount').value = "";
+            document.getElementById('redeemContact').value = "";
+            document.getElementById('redeemTotalDisplay').innerText = "Total Payable: ₹0 (Min ₹10)";
+            document.getElementById('redeemModal').style.display = 'flex';
+        }
+
+        function calcRedeemTotal() {
+            let amt = Number(document.getElementById('redeemAmount').value) || 0;
+            if(amt < 10) {
+                document.getElementById('redeemTotalDisplay').innerText = "⚠️ Minimum amount should be ₹10";
+            } else {
+                let total = amt + 5;
+                document.getElementById('redeemTotalDisplay').innerText = `Total Payable: ₹${total} (For ₹${amt} Redeem Code)`;
+            }
+        }
+
+        function submitRedeemOrder() {
+            let amt = Number(document.getElementById('redeemAmount').value) || 0;
+            let contact = document.getElementById('redeemContact').value.trim();
+
+            if(amt < 10 || contact.length < 10) {
+                alert("Please enter a valid amount (Minimum ₹10) and 10-digit mobile number!");
+                return;
+            }
+
+            let totalPayable = amt + 5;
+            tempRedeemOrderData = { amount: amt, total: totalPayable, contact };
+
+            document.getElementById('redeemModal').style.display = 'none';
+            document.getElementById('redeemPayAmountInfo').innerText = `Total Amount to Pay: ₹${totalPayable} for ₹${amt} Play Store Redeem Code`;
+            document.getElementById('redeemPaymentModal').style.display = 'flex';
+            startRedeemTimer();
+        }
+
+        function startRedeemTimer() {
+            clearInterval(redeemTimerInterval);
+            let timeLeft = 180;
+            let timerEl = document.getElementById('redeemTimerDisplay');
+            redeemTimerInterval = setInterval(() => {
+                let m = Math.floor(timeLeft / 60);
+                let s = timeLeft % 60;
+                timerEl.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+                if(timeLeft <= 0) {
+                    clearInterval(redeemTimerInterval);
+                    alert("⏱️ Payment time expired!");
+                    document.getElementById('redeemPaymentModal').style.display = 'none';
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function proceedToRedeemVerification() {
+            clearInterval(redeemTimerInterval);
+            document.getElementById('redeemPaymentModal').style.display = 'none';
+            verificationTargetType = 'redeem';
+            startVerificationProcess();
+        }
+
+        function openCableSection() {
+            let cBox = document.getElementById('cableSectionContainer');
+            cBox.style.display = 'flex';
+            let listContainer = document.getElementById('cableProvidersList');
+            listContainer.innerHTML = "";
+            cableProviders.forEach(cp => {
+                let pr = cablePrices[cp.name] || 600;
+                listContainer.innerHTML += `
+                    <div class="cable-provider-card" onclick="openCableOrderModal('${cp.name}', ${pr})">
+                        <div>
+                            <div style="font-weight: bold; color: #333; font-size: 13px;">📺 ${cp.name}</div>
+                            <div style="font-size: 10px; color: #666; margin-top: 2px;">${cp.desc}</div>
+                        </div>
+                        <div style="color: #2e7d32; font-weight: bold; font-size: 13px;">₹${pr} ➔</div>
+                    </div>
+                `;
+            });
+        }
+
+        let selectedCableProvider = "";
+        let selectedCablePrice = 600;
+
+        function openCableOrderModal(pName, price) {
+            document.getElementById('cableSectionContainer').style.display = 'none';
+            selectedCableProvider = pName;
+            selectedCablePrice = price;
+            document.getElementById('cableModalTitle').innerText = `📺 ${pName} Connection`;
+            document.getElementById('cablePriceDisplay').innerText = `Connection Price: ₹${price}`;
+            document.getElementById('cableStbNo').value = "";
+            document.getElementById('cableName').value = "";
+            document.getElementById('cableUpi').value = "";
+            document.getElementById('cableContact').value = "";
+            document.getElementById('cableAddress').value = "";
+            document.getElementById('cableOrderModal').style.display = 'flex';
+        }
+
+        function submitCableOrder() {
+            let stb = document.getElementById('cableStbNo').value.trim();
+            let name = document.getElementById('cableName').value.trim();
+            let upi = document.getElementById('cableUpi').value.trim();
+            let contact = document.getElementById('cableContact').value.trim();
+            let address = document.getElementById('cableAddress').value.trim();
+
+            if(!stb || !name || !upi || contact.length < 10 || !address) {
+                alert("Please fill in STB/Card No, Name, UPI ID, 10-digit Contact, and Address!");
+                return;
+            }
+
+            tempCableOrderData = { provider: selectedCableProvider, stb, name, upi, contact, address, price: selectedCablePrice };
+
+            document.getElementById('cableOrderModal').style.display = 'none';
+            document.getElementById('cablePayAmountInfo').innerText = `Total Amount to Pay: ₹${selectedCablePrice} for ${selectedCableProvider}`;
+            document.getElementById('cablePaymentModal').style.display = 'flex';
+            toggleCablePaymentMode();
+            startCableTimer();
+        }
+
+        function toggleCablePaymentMode() {
+            let mode = document.querySelector('input[name="cablePayMode"]:checked').value;
+            let upiBox = document.getElementById('cableUpiBox');
+            if(mode === 'Online') {
+                upiBox.style.display = 'block';
+                startCableTimer();
+            } else {
+                upiBox.style.display = 'none';
+                clearInterval(cableTimerInterval);
+            }
+        }
+
+        function startCableTimer() {
+            clearInterval(cableTimerInterval);
+            let timeLeft = 180;
+            let timerEl = document.getElementById('cableTimerDisplay');
+            cableTimerInterval = setInterval(() => {
+                let m = Math.floor(timeLeft / 60);
+                let s = timeLeft % 60;
+                timerEl.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+                if(timeLeft <= 0) {
+                    clearInterval(cableTimerInterval);
+                    alert("⏱️ Payment time expired!");
+                    document.getElementById('cablePaymentModal').style.display = 'none';
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function proceedToCableVerification() {
+            clearInterval(cableTimerInterval);
+            document.getElementById('cablePaymentModal').style.display = 'none';
+            verificationTargetType = 'cable';
+            startVerificationProcess();
+        }
+
+        function playSuccessChime() {
+            try {
+                let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.15);
+                osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.8);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.8);
+            } catch(e) {}
+        }
+
+        function filterPlans(cat, chipEl) {
+            activeCategoryFilter = cat;
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            chipEl.classList.add('active');
+            renderPlans();
+        }
+
+        function renderPlans() {
+            let container = document.getElementById('plansContainer');
+            container.innerHTML = "";
+            let selectedOp = document.getElementById('operatorSelect').value;
+            let filtered = plansList.filter(p => p.operator === selectedOp && (activeCategoryFilter === 'All' || p.category === activeCategoryFilter));
+
+            if(filtered.length === 0) {
+                container.innerHTML = `<p style="font-size:11px; color:#777; text-align:center; padding:10px;">No plans found for ${selectedOp} in this category.</p>`;
+                return;
+            }
+
+            filtered.forEach(p => {
+                let adminButtons = isAdminLoggedIn ? `
+                    <div style="margin-left: 10px; display: flex; flex-direction: column; gap: 3px;">
+                        <button onclick="openEditModal(${p.id})" style="font-size:9px; background:#00acc1; color:white; border:none; padding:3px 6px; border-radius:3px; cursor:pointer;">Edit</button>
+                        <button onclick="deletePlan(${p.id})" style="font-size:9px; background:#e53935; color:white; border:none; padding:3px 6px; border-radius:3px; cursor:pointer;">Delete</button>
+                    </div>
+                ` : '';
+
+                container.innerHTML += `
+                    <div class="plan-list-item" onclick="initiateCheckout('${p.operator} - ${p.name} (${p.details})', ${p.price})">
+                        <div style="flex: 1;">
+                            <div style="font-size: 13px; font-weight: bold; color: #333;">₹${p.price} <span style="font-size:10px; background:#ede7f6; color:#512da8; padding:1px 5px; border-radius:3px;">${p.category}</span></div>
+                            <div style="font-size: 11px; color: #444; margin-top: 2px;"><b>${p.name}</b></div>
+                            <div style="font-size: 10px; color: #666; margin-top: 1px;">📞 ${p.details}</div>
+                        </div>
+                        ${adminButtons}
+                    </div>
+                `;
+            });
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.section-view').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+
+            if(tabName === 'home') {
+                document.getElementById('homeSection').classList.add('active');
+                document.getElementById('navHome').classList.add('active');
+            } else if(tabName === 'history') {
+                document.getElementById('historySection').classList.add('active');
+                document.getElementById('navHistory').classList.add('active');
+                renderHistory();
+            } else if(tabName === 'vouchers') {
+                document.getElementById('vouchersSection').classList.add('active');
+                document.getElementById('navVouchers').classList.add('active');
+            } else if(tabName === 'profile') {
+                document.getElementById('profileSection').classList.add('active');
+                document.getElementById('navProfile').classList.add('active');
+            }
+            window.scrollTo(0, 0);
+        }
+
+        function startVerificationProcess() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            document.getElementById('loadingText').innerText = "Verifying Payment & Availability...";
+            document.getElementById('loadingSubText').innerText = "Please wait while we check records...";
+            document.getElementById('captchaBox').style.display = 'none';
+
+            setTimeout(() => {
+                document.getElementById('loadingText').innerText = "Security Check Required";
+                document.getElementById('loadingSubText').innerText = "Please confirm you are human (Tick below):";
+                document.getElementById('captchaBox').style.display = 'block';
+            }, 3000);
+        }
+
+        function completeVerificationFinal() {
+            let robot = document.getElementById('robotCheck');
+            if(!robot.checked) return;
+
+            document.getElementById('captchaBox').style.display = 'none';
+            document.getElementById('loadingText').innerText = "Order Processing...";
+            document.getElementById('loadingSubText').innerText = "Generating dispatch receipt...";
+
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').style.display = 'none';
+                playSuccessChime();
+                document.getElementById('successOverlay').style.display = 'flex';
+
+                let adminWhatsApp = "919767136557";
+                let histObj = {};
+                let waUrl = "";
+
+                if(verificationTargetType === 'redeem') {
+                    let d = tempRedeemOrderData;
+                    let fakeCode = "ZK-" + Math.floor(1000 + Math.random() * 9000) + "-" + Math.floor(1000 + Math.random() * 9000) + "-" + Math.floor(1000 + Math.random() * 9000);
+
+                    histObj = {
+                        id: Date.now(),
+                        title: `🎮 Play Store Redeem Code ₹${d.amount} (Code: ${fakeCode})`,
+                        price: d.total,
+                        date: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
+                        status: "⏳ Payment Verification Pending (Admin Approval Required)",
+                        code: fakeCode
+                    };
+
+                    let msg = `🎮 NEW PLAY STORE REDEEM CODE ORDER!\n\n` +
+                              `💰 Amount: ₹${d.amount} (Total Paid: ₹${d.total})\n` +
+                              `📞 Contact No: ${d.contact}\n` +
+                              `🔑 Generated Code: ${fakeCode}\n` +
+                              `📅 Date: ${histObj.date}\n\n` +
+                              `Verify payment and approve in Admin panel!`;
+                    waUrl = `https://wa.me/${adminWhatsApp}?text=` + encodeURIComponent(msg);
+
+                } else if(verificationTargetType === 'cable') {
+                    let d = tempCableOrderData;
+                    let payMode = document.querySelector('input[name="cablePayMode"]:checked').value;
+
+                    histObj = {
+                        id: Date.now(),
+                        title: `📺 Cable TV: ${d.provider} (STB: ${d.stb}) [${payMode}]`,
+                        price: d.price,
+                        date: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
+                        status: "⏳ Payment Verification Pending (Admin Approval Required)"
+                    };
+
+                    let msg = `📺 NEW CABLE TV CONNECTION ORDER!\n\n` +
+                              `📡 Provider: ${d.provider}\n` +
+                              `🔢 STB / Card No: ${d.stb}\n` +
+                              `👤 Customer Name: ${d.name}\n` +
+                              `📞 Contact No: ${d.contact}\n` +
+                              `💳 UPI ID: ${d.upi}\n` +
+                              `💰 Amount: ₹${d.price} (${payMode})\n` +
+                              `📍 Address: ${d.address}\n` +
+                              `📅 Date: ${histObj.date}\n\n` +
+                              `Verify payment and approve in Admin panel!`;
+                    waUrl = `https://wa.me/${adminWhatsApp}?text=` + encodeURIComponent(msg);
+                }
+
+                historyList.unshift(histObj);
+                localStorage.setItem('zk_history_v15', JSON.stringify(historyList));
+
+                setTimeout(() => {
+                    document.getElementById('successOverlay').style.display = 'none';
+                    window.open(waUrl, '_blank');
+                    switchTab('history');
+                }, 1500);
+            }, 2000);
+        }
+
+        function updateOrderStatus(orderId, newStatus) {
+            let h = historyList.find(item => item.id === orderId);
+            if(h) {
+                h.status = newStatus;
+                if(newStatus.includes("Successful") && h.code) {
+                    h.status = `✅ Success! Your Code: ${h.code}`;
+                }
+                localStorage.setItem('zk_history_v15', JSON.stringify(historyList));
+                renderHistory();
+            }
+        }
+
+        function sendCodeViaWhatsApp(code, contact) {
+            let text = `🎮 Your Fastest Recharge Play Store Code is: *${code}*\nEnjoy your purchase!`;
+            window.open(`https://wa.me/91${contact}?text=` + encodeURIComponent(text), '_blank');
+        }
+
+        function renderHistory() {
+            let c = document.getElementById('historyListContainer');
+            if(historyList.length === 0) {
+                c.innerHTML = `<div class="card-box" style="text-align: center; color: #777; padding: 20px;"><p style="font-size:12px;">No history yet.</p></div>`;
+                return;
+            }
+            c.innerHTML = "";
+            historyList.forEach(h => {
+                let adminApprovalButtons = isAdminLoggedIn ? `
+                    <div style="margin-top: 6px; display: flex; gap: 4px; flex-wrap: wrap;">
+                        <button onclick="updateOrderStatus(${h.id}, '✅ Payment Successful')" style="font-size:9px; background:#2e7d32; color:white; border:none; padding:3px 6px; border-radius:3px; cursor:pointer;">Approve (Success) ✔️</button>
+                        <button onclick="updateOrderStatus(${h.id}, '❌ Payment Not Received / Failed')" style="font-size:9px; background:#e53935; color:white; border:none; padding:3px 6px; border-radius:3px; cursor:pointer;">Reject (Failed) ❌</button>
+                    </div>
+                ` : '';
+
+                let sendWaBtn = h.code && h.status.includes("Success") ? `
+                    <div style="margin-top:6px;">
+                        <button onclick="sendCodeViaWhatsApp('${h.code}', '9767136557')" style="font-size:10px; background:#25d366; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer; font-weight:bold;">Send Code via WhatsApp 🟢</button>
+                    </div>
+                ` : '';
+
+                let statusBg = h.status.includes("Failed") ? "#ffebee" : (h.status.includes("Success") ? "#e8f5e9" : "#fff3cd");
+                let statusColor = h.status.includes("Failed") ? "#c62828" : (h.status.includes("Success") ? "#2e7d32" : "#856404");
+
+                c.innerHTML += `
+                    <div class="card-box" style="font-size: 12px;">
+                        <div style="font-weight: bold; color: #333;">${h.title}</div>
+                        <div style="color: #512da8; font-weight: bold; margin-top: 2px;">₹${h.price}</div>
+                        <div style="color: #666; font-size: 10px; margin-top: 2px;">📅 ${h.date}</div>
+                        <div style="margin-top: 6px; background: ${statusBg}; color: ${statusColor}; padding: 3px 8px; border-radius: 4px; display: inline-block; font-weight: bold; font-size: 10px; border: 1px solid #ffeeba;">${h.status}</div>
+                        ${sendWaBtn}
+                        ${adminApprovalButtons}
+                    </div>
+                `;
+            });
+        }
+
+        function initiateCheckout(itemName, price) {
+            let mob = document.getElementById('rechargeMob').value.trim();
+            let sim = document.getElementById('operatorSelect').value;
+            if(mob.length < 10) {
+                alert("Please enter a valid 10-digit mobile number first!");
+                document.getElementById('rechargeMob').focus();
+                return;
+            }
+            currentCheckoutItem = {title: `${itemName}`, price: price, mobile: mob, sim: sim};
+            document.getElementById('qrItemInfo').innerHTML = `Number: ${mob} (${sim})<br>${currentCheckoutItem.title}<br><b>Amount: ₹${price}</b>`;
+            document.getElementById('rechargeModal').style.display = 'none';
+            document.getElementById('qrModal').style.display = 'flex';
+            startFourMinTimer();
+        }
+
+        function buyVoucher(vName, price) {
+            let mob = "N/A";
+            currentCheckoutItem = {title: `${vName} Voucher`, price: price, mobile: mob, sim: "Voucher"};
+            document.getElementById('qrItemInfo').innerHTML = `${currentCheckoutItem.title}<br><b>Amount: ₹${price}</b>`;
+            document.getElementById('qrModal').style.display = 'flex';
+            startFourMinTimer();
+        }
+
+        function startFourMinTimer() {
+            clearInterval(timerInterval);
+            let timeLeft = 240;
+            let timerEl = document.getElementById('timerDisplay');
+            
+            timerInterval = setInterval(() => {
+                let m = Math.floor(timeLeft / 60);
+                let s = timeLeft % 60;
+                timerEl.innerText = `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+                if(timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert("⏱️ Payment time expired!");
+                    document.getElementById('qrModal').style.display = 'none';
+                }
+                timeLeft--;
+            }, 1000);
+        }
+
+        function confirmPaymentAndSendWhatsApp() {
+            clearInterval(timerInterval);
+            document.getElementById('qrModal').style.display = 'none';
+            
+            playSuccessChime();
+            document.getElementById('successOverlay').style.display = 'flex';
+
+            let histObj = {
+                id: Date.now(),
+                title: `${currentCheckoutItem.title} - ${currentCheckoutItem.mobile} (${currentCheckoutItem.sim})`,
+                price: currentCheckoutItem.price,
+                date: new Date().toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }),
+                status: "⏳ Wait Few Minutes (Verification in Progress)"
+            };
+            historyList.unshift(histObj);
+            localStorage.setItem('zk_history_v15', JSON.stringify(historyList));
+            
+            let adminWhatsApp = "919767136557"; 
+            let msg = `⚡ NEW RECHARGE / ORDER RECEIVED!\n\n` +
+                      `📱 Mobile Number: ${currentCheckoutItem.mobile}\n` +
+                      `📶 Sim Operator: ${currentCheckoutItem.sim}\n` +
+                      `📦 Plan/Item: ${currentCheckoutItem.title}\n` +
+                      `💰 Amount Paid: ₹${currentCheckoutItem.price}\n` +
+                      `📅 Date: ${histObj.date}\n\n` +
+                      `Please verify payment and process recharge!`;
+
+            let waUrl = `https://wa.me/${adminWhatsApp}?text=` + encodeURIComponent(msg);
+
+            setTimeout(() => {
+                document.getElementById('successOverlay').style.display = 'none';
+                window.open(waUrl, '_blank');
+                switchTab('history');
+            }, 1500);
+        }
+
+        function verifyAdmin() {
+            let pass = document.getElementById('adminPassInput').value.trim();
+            if(pass === "zkadmin123" || pass === "zkadmin") {
+                isAdminLoggedIn = true;
+                document.getElementById('adminControlsArea').style.display = 'block';
+                document.getElementById('priceCableJio').value = cablePrices["JioFiber TV"] || 600;
+                document.getElementById('priceCableAirtel').value = cablePrices["Airtel Digital TV"] || 650;
+                document.getElementById('priceCableTata').value = cablePrices["Tata Play HD"] || 700;
+                document.getElementById('priceCableSun').value = cablePrices["Sun Direct"] || 500;
+                document.getElementById('priceCableDish').value = cablePrices["D2H / Dish TV"] || 550;
+                alert("🔓 Admin Unlocked!");
+            } else {
+                alert("❌ Incorrect Password!");
+            }
+        }
+
+        function shareOnWhatsapp() {
+            let currentUrl = window.location.origin + window.location.pathname;
+            let refCode = "zk_ref_" + Math.floor(100000 + Math.random() * 900000);
+            let shareText = `🎁 Get ₹25 Instant Cashback!\nUse this Fastest Recharge App:\n${currentUrl}?ref=${refCode}`;
+            window.open(`https://wa.me/?text=` + encodeURIComponent(shareText), '_blank');
+        }
+    </script>
+
+</body>
+</html>
